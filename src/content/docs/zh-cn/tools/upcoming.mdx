@@ -1,0 +1,26 @@
+---
+title: 构建与打包管线
+description: xforge、xsign、xbundle 与 xross 架构规划。
+---
+
+随着 `xsysroot` 与 `xcompiler` 上线 crates.io，接下来四个核心组件将补齐完整的零 Docker 全链路：
+
+## `xforge` — 跨平台构建编排器
+- 读取声明式目标矩阵（Rust / C / C++ / CMake）
+- 自动配置 `xcompiler` + `xsysroot` 链接器、编译参数与环境变量
+- 负责构建后处理：Mach-O 通用胖库 `lipo`、符号 `strip` 以及调试符号拆分（`.dSYM` / `.pdb` / `.debug`）
+- 直接产出 **第 1 层（静态/动态库）** 与 **第 2 层（可执行程序）**
+
+## `xsign` — 纯 Rust 跨平台代码签名
+- **Apple**：Mach-O、`.app`、`.xcframework`、`.ipa` 签名与公证
+- **Windows**：`.exe`、`.dll`、`.msi`、`.msix` Authenticode 签名
+- **Android**：APK Signature Scheme v2/v3
+- **OpenHarmony**：HAP / HSP / APP 证书与 Profile 签名
+
+## `xbundle` — 软件包与应用安装包
+- **开发者软件包（第 3 层）**：`.xcframework` *（可选 SPM / `.podspec`）*、`.aar` *（可选 `+ prefab`）*、`.har` / `.hsp` / `.hnp`、C/C++ SDK、`.whl`、npm 原生/wasm 包、`.nupkg`、`cgo`
+- **终端应用包（第 4 层）**：`.app` / `.dmg` / `.pkg` / `.ipa`、`.deb` / `.rpm` / `.AppImage`、`.msix` / `.msi`、`.apk` / `.aab`、`.app` / `.hap`
+
+## `xross` — 统一顶层 CLI
+- 单一 `xross.toml` 清单文件一键串联 `sysroot → compiler → forge → sign → bundle`
+- 本地开发与 CI 构建体验完全一致

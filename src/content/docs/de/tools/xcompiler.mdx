@@ -1,0 +1,33 @@
+---
+title: xcompiler
+description: Portabler Host-Compiler-Manager für LLVM (xllvm) und Cross-GCC (xgcc).
+---
+
+**Repository:** [cross-toolchains/xcompiler](https://github.com/cross-toolchains/xcompiler) · **Status:** Verfügbar auf crates.io (`v0.1.0`)
+
+`xcompiler` verwaltet minimale, eigenständige Cross-Compiler auf Linux, macOS und Windows, damit Builds niemals von abweichenden Host-Compiler-Versionen abhängen.
+
+## Sub-Tools & Upstream-Quellen
+
+| Crate | Compiler | Upstream-Quellen |
+|---|---|---|
+| **`xllvm`** | Multi-Target-`clang` + `lld` + LLVM-Binutils | [cross-toolchains/llvm-slim](https://github.com/cross-toolchains/llvm-slim)<br />[mirrors.edge.kernel.org](https://mirrors.edge.kernel.org/pub/tools/llvm/files/) |
+| **`xgcc`** | MinGW-w64 (`*-pc-windows-gnu`) & Bare-Metal (`arm-none-eabi`, `riscv-none-elf`) | [xpack-dev-tools/mingw-w64-gcc-xpack](https://github.com/xpack-dev-tools/mingw-w64-gcc-xpack)<br />[xpack-dev-tools/arm-none-eabi-gcc-xpack](https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack)<br />[xpack-dev-tools/riscv-none-elf-gcc-xpack](https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack)<br />[arm/gnu-toolchain-for-windows-on-arm64](https://github.com/arm/gnu-toolchain-for-windows-on-arm64) |
+
+## Schnelleinstieg
+
+```sh
+cargo install xcompiler
+
+# Zustand von Host- und verwalteten Compilern prüfen
+xcompiler doctor
+
+# Portables Slim-LLVM (~26 MiB) installieren und direkt kompilieren
+xcompiler install llvm 23.1.6
+eval "$(xllvm env --managed)"
+clang hello.c -o hello
+
+# Oder ein Windows-Binary mit xgcc cross-kompilieren
+xcompiler install gcc --target x86_64-pc-windows-gnu
+"$(xgcc path --target x86_64-pc-windows-gnu)" hello.c -o hello.exe
+```

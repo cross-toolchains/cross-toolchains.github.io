@@ -1,0 +1,26 @@
+---
+title: Upcoming Pillars
+description: Design overview of xforge, xsign, xbundle, and xross.
+---
+
+With `xsysroot` and `xcompiler` live on crates.io, the next four pillars complete the zero-Docker pipeline:
+
+## `xforge` — Cross-Build Orchestrator
+- Reads a declarative target matrix (Rust / C / C++ / CMake)
+- Automatically resolves `xcompiler` + `xsysroot` linkers, flags, and environment variables
+- Handles post-build steps: Mach-O universal `lipo`, symbol `strip`, and debug info splitting (`.dSYM` / `.pdb` / `.debug`)
+- Produces **Layer 1 (Libraries)** and **Layer 2 (Executables)**
+
+## `xsign` — Pure-Rust Cross-Platform Signing
+- **Apple**: Mach-O, `.app`, `.xcframework`, `.ipa` codesigning & notarization
+- **Windows**: Authenticode signing for `.exe`, `.dll`, `.msi`, `.msix`
+- **Android**: APK Signature Scheme v2/v3
+- **OpenHarmony**: HAP / HSP / APP certificate & profile signing
+
+## `xbundle` — Packages & App Bundles
+- **Developer Packages (Layer 3)**: `.xcframework` *(optional SPM / `.podspec`)*, `.aar` *(optional `+ prefab`)*, `.har` / `.hsp` / `.hnp`, C/C++ SDKs, `.whl`, npm native & wasm packages, `.nupkg`, `cgo`
+- **End-User App Bundles (Layer 4)**: `.app` / `.dmg` / `.pkg` / `.ipa`, `.deb` / `.rpm` / `.AppImage`, `.msix` / `.msi`, `.apk` / `.aab`, `.app` / `.hap`
+
+## `xross` — Unified CLI
+- Single `xross.toml` configuration chaining `sysroot → compiler → forge → sign → bundle`
+- Identical workflow locally and in CI

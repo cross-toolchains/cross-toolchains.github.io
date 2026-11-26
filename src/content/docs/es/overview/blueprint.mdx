@@ -1,0 +1,46 @@
+---
+title: Arquitectura de artefactos
+description: La arquitectura de artefactos en 4 capas a través de bibliotecas, ejecutables, paquetes y paquetes de aplicaciones.
+---
+
+`cross-toolchains` está diseñado tanto para **autores de bibliotecas / SDKs** como para **desarrolladores de aplicaciones**. Todos los resultados se organizan en cuatro capas claras:
+
+- **Capas 1 y 2 (Binarios sin procesar y bibliotecas)** — producidos por **`xforge`** (orquestando `xcompiler` + `xsysroot`)
+- **Capas 3 y 4 (Paquetes y paquetes de aplicaciones)** — ensamblados por **`xbundle`** (con firma multiplataforma mediante **`xsign`**)
+
+## Matriz de artefactos de 4 capas
+
+| Capa | Plataforma / Ecosistema | Formatos de artefacto | Productor | Firma (`xsign`) | Prioridad |
+|---|---|---|---|---|---|
+| **1. Bibliotecas**<br />*(Estáticas y dinámicas)* | Linux / Android / OpenHarmony | `.so`, `.a` | `xforge` | Opcional | P0 |
+| | Apple (macOS / iOS) | `.dylib`, `.a` | `xforge` | Codesign | P0 |
+| | Windows | `.dll` (+ `.lib`), `.lib` | `xforge` | Authenticode | P0 |
+| | Web / WASI | `.wasm` | `xforge` | — | P1 |
+| **2. Ejecutables** | Windows | `.exe` | `xforge` | Authenticode | P0 |
+| | Linux / macOS / Android / OpenHarmony | `unix-exe` (ELF / Mach-O) | `xforge` | macOS Codesign | P0 |
+| **3. Paquetes**<br />*(Para desarrolladores)* | Apple | `.xcframework` *(SPM `Package.swift` / `.podspec` opcionales)* | `xbundle` | Codesign | P0 |
+| | Android | `.aar` *(`+ prefab` opcional)* | `xbundle` | — | P0 |
+| | OpenHarmony | `.har`, `.hsp`, `.hnp` | `xbundle` | Opcional (`.hsp`) | P0 |
+| | C / C++ | `include/` + `.so`/`.dylib`/`.a`/`.dll` *(`.pc` / `Config.cmake` opcionales)* | `xbundle` | Opcional | P0 |
+| | Python | `.whl` | `xbundle` | — | P1 |
+| | Node.js | paquete nativo de npm (`.node` + `.d.ts`) | `xbundle` | Opcional | P1 |
+| | Web / JS | paquete wasm de npm (`.wasm` + `.d.ts`) | `xbundle` | — | P1 |
+| | .NET / C# | `.nupkg` | `xbundle` | Opcional | P1 |
+| | Go | cgo (bindings de Go + bibliotecas nativas precompiladas) | `xbundle` | — | P1 |
+| | Java / Kotlin (JVM) | fat `.jar` (bibliotecas nativas integradas) | `xbundle` | — | P2 |
+| **4. Paquetes de apps**<br />*(Para usuarios finales)* | Apple | `.app`, `.dmg`, `.pkg`, `.ipa` *(+ archivo `unix-exe`)* | `xbundle` | Codesign + Notarize | P0 |
+| | Linux | `.deb`, `.rpm`, `.AppImage` *(+ `.pkg.tar.zst` / archivo `unix-exe`)* | `xbundle` | GPG (opcional) | P0 |
+| | Windows | `.msix`, `.msi` *(+ archivo `.exe` / NSIS)* | `xbundle` | Authenticode | P0 |
+| | Android | `.apk`, `.aab` | `xbundle` | APK Signature (v2/v3) | P0 |
+| | OpenHarmony | `.app`, `.hap` | `xbundle` | Perfil / Cert de Harmony | P0 |
+
+## Responsabilidades de la toolchain
+
+| Herramienta | Rol | Alcance |
+|---|---|---|
+| **`xsysroot`** | Gestor de sysroots / SDKs de destino | `xlinux`, `xmac`, `xios`, `xdroid`, `xohos` (+ `xwin` oficial para Windows MSVC) |
+| **`xcompiler`** | Gestor de compiladores portátiles para el host | `xllvm` (`llvm-slim` Clang + LLD multidestino) y `xgcc` (MinGW / GCC bare-metal) |
+| **`xforge`** | Orquestador de compilación cruzada sin Docker | Dirige `xcompiler` + `xsysroot` para compilar las **Capas 1 y 2** (incluyendo `lipo` / `strip`) |
+| **`xsign`** | Firma de código multiplataforma en Rust puro | Firma para Apple, Windows, Android y OpenHarmony en las **Capas 1–4** |
+| **`xbundle`** | Empaquetador de librerías y aplicaciones | Ensambla las **Capas 1 y 2** en las **Capas 3 y 4** sin herramientas nativas del host |
+| **`xross`** | CLI unificada de alto nivel | Flujo de extremo a extremo: `sysroot → compiler → forge → sign → bundle` |

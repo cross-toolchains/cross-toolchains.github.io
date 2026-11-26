@@ -1,0 +1,37 @@
+---
+title: Roadmap
+description: Entwicklungsphasen für xsysroot, xcompiler, xforge, xsign, xbundle und xross.
+---
+
+### Phase 1 — Fundament (`xsysroot` & `xcompiler`)
+
+- [x] `xsysroot`: `xlinux`, `xmac`, `xios`, `xdroid`, `xohos` mit 6/6 plattformübergreifender CI (Linux / macOS / Windows)
+- [x] `xcompiler`: Einheitlicher Workspace für `xllvm` + `xgcc` auf crates.io veröffentlicht (`v0.1.0`)
+- [x] `llvm-slim`: Vollständige portable 6-Host-Binary-Matrix (`x86_64` / `aarch64` × Linux / macOS / Windows)
+- [ ] `xmingw` (optional P1): Schlankes UCRT-Sysroot für `*-pc-windows-gnullvm`
+
+### Phase 2 — Cross-Build-Orchestrierung (`xforge`)
+
+- [ ] Deklarative Multi-Target-Build-Matrix (Rust / C / C++ / CMake)
+- [ ] Automatische Verdrahtung von Linkern, Flags und Umgebungsvariablen für `xcompiler` + `xsysroot`
+- [ ] Post-Build-Helfer: Universelles Mach-O-`lipo`, Symbol-`strip` und Aufteilung von `.dSYM` / `.pdb` / `.debug`
+- [ ] Direkte Ausgabe von **Schicht 1 (Bibliotheken)** und **Schicht 2 (Ausführbare Dateien)**
+
+### Phase 3 — Plattformübergreifende Signierung (`xsign`)
+
+- [ ] Apple Codesign (Mach-O, `.app`, `.xcframework`, `.ipa`) & Notarisierung
+- [ ] Windows Authenticode (`.exe`, `.dll`, `.msi`, `.msix`)
+- [ ] Android APK Signature Scheme v2/v3 (`.apk`, `.aab`)
+- [ ] OpenHarmony HAP- / HSP- / APP-Signierung
+
+### Phase 4 — Paketierung (`xbundle`)
+
+- [ ] **P0 Native Pakete**: `.xcframework` *(optional SPM / `.podspec`)*, `.aar` *(optional `+ prefab`)*, `.har` / `.hsp` / `.hnp`, C/C++-SDK-Archive
+- [ ] **P0 App-Bundles**: `.app` / `.dmg` / `.pkg` / `.ipa`, `.deb` / `.rpm` / `.AppImage`, `.msix` / `.msi`, `.apk` / `.aab`, `.app` / `.hap`
+- [ ] **P1 Sprachökosystem-Pakete**: Python `.whl`, native & Wasm-npm-Pakete für Node.js, `.NET` `.nupkg`, Go `cgo`
+- [ ] **P2 Erweiterungen**: JVM-Fat-`.jar`, Arch `.pkg.tar.zst`, NSIS `.exe`, OCI-Container-Images
+
+### Phase 5 — Einheitliches Erlebnis (`xross`)
+
+- [ ] Einzelnes Projekt-Manifest `xross.toml` zur Steuerung von `sysroot → compiler → forge → sign → bundle`
+- [ ] Ein-Befehl-Release-Workflow (`xross release`) für GitHub Actions und lokale Builds ohne Docker

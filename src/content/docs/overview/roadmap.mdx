@@ -1,0 +1,37 @@
+---
+title: Roadmap
+description: Development phases across xsysroot, xcompiler, xforge, xsign, xbundle, and xross.
+---
+
+### Phase 1 — Foundation (`xsysroot` & `xcompiler`)
+
+- [x] `xsysroot`: `xlinux`, `xmac`, `xios`, `xdroid`, `xohos` with 6/6 cross-platform CI (Linux / macOS / Windows)
+- [x] `xcompiler`: `xllvm` + `xgcc` unified workspace published on crates.io (`v0.1.0`)
+- [x] `llvm-slim`: complete 6-host portable binary matrix (`x86_64` / `aarch64` × Linux / macOS / Windows)
+- [ ] `xmingw` (optional P1): lightweight UCRT sysroot for `*-pc-windows-gnullvm`
+
+### Phase 2 — Cross-Build Orchestration (`xforge`)
+
+- [ ] Declarative multi-target build matrix (Rust / C / C++ / CMake)
+- [ ] Automatic wiring of `xcompiler` + `xsysroot` linkers, flags, and env vars
+- [ ] Post-build helpers: universal Mach-O `lipo`, symbol `strip`, and `.dSYM` / `.pdb` / `.debug` splitting
+- [ ] Direct output of **Layer 1 (Libraries)** and **Layer 2 (Executables)**
+
+### Phase 3 — Cross-Platform Signing (`xsign`)
+
+- [ ] Apple Codesign (Mach-O, `.app`, `.xcframework`, `.ipa`) & Notarization
+- [ ] Windows Authenticode (`.exe`, `.dll`, `.msi`, `.msix`)
+- [ ] Android APK Signature Scheme v2/v3 (`.apk`, `.aab`)
+- [ ] OpenHarmony HAP / HSP / APP signing
+
+### Phase 4 — Packaging (`xbundle`)
+
+- [ ] **P0 Native Packages**: `.xcframework` *(optional SPM / `.podspec`)*, `.aar` *(optional `+ prefab`)*, `.har` / `.hsp` / `.hnp`, C/C++ SDK archives
+- [ ] **P0 App Bundles**: `.app` / `.dmg` / `.pkg` / `.ipa`, `.deb` / `.rpm` / `.AppImage`, `.msix` / `.msi`, `.apk` / `.aab`, `.app` / `.hap`
+- [ ] **P1 Language Ecosystem Packages**: Python `.whl`, Node.js npm native & wasm packages, `.NET` `.nupkg`, Go `cgo`
+- [ ] **P2 Extensions**: JVM fat `.jar`, Arch `.pkg.tar.zst`, NSIS `.exe`, OCI container images
+
+### Phase 5 — Unified Experience (`xross`)
+
+- [ ] Single `xross.toml` project manifest driving `sysroot → compiler → forge → sign → bundle`
+- [ ] One-command release workflow (`xross release`) for GitHub Actions & local zero-Docker builds

@@ -1,0 +1,37 @@
+---
+title: 路线图
+description: xsysroot、xcompiler、xforge、xsign、xbundle 与 xross 的分阶段演进路线。
+---
+
+### 第一阶段 — 基础设施（`xsysroot` & `xcompiler`）
+
+- [x] `xsysroot`：`xlinux`、`xmac`、`xios`、`xdroid`、`xohos` 全线打通 6/6 跨平台 CI（Linux / macOS / Windows）
+- [x] `xcompiler`：`xllvm` + `xgcc` 统一工作空间发布至 crates.io（`v0.1.0`）
+- [x] `llvm-slim`：完成 6 大宿主机便携二进制矩阵（`x86_64` / `aarch64` × Linux / macOS / Windows）
+- [ ] `xmingw`（可选 P1）：面向 `*-pc-windows-gnullvm` 的轻量 UCRT sysroot
+
+### 第二阶段 — 跨平台构建编排（`xforge`）
+
+- [ ] 声明式多目标构建矩阵（Rust / C / C++ / CMake）
+- [ ] 自动接管 `xcompiler` + `xsysroot` 链接器、编译参数与环境变量
+- [ ] 构建后处理：Mach-O 通用库 `lipo`、符号 `strip` 以及 `.dSYM` / `.pdb` / `.debug` 拆分
+- [ ] 直接产出 **第 1 层（库）** 与 **第 2 层（可执行程序）**
+
+### 第三阶段 — 跨平台纯 Rust 签名（`xsign`）
+
+- [ ] Apple Codesign（Mach-O、`.app`、`.xcframework`、`.ipa`）与公证（Notarization）
+- [ ] Windows Authenticode 签名（`.exe`、`.dll`、`.msi`、`.msix`）
+- [ ] Android APK Signature Scheme v2/v3（`.apk`、`.aab`）
+- [ ] OpenHarmony HAP / HSP / APP 签名
+
+### 第四阶段 — 跨平台打包（`xbundle`）
+
+- [ ] **P0 原生软件包**：`.xcframework` *（可选 SPM / `.podspec`）*、`.aar` *（可选 `+ prefab`）*、`.har` / `.hsp` / `.hnp`、C/C++ SDK 归档
+- [ ] **P0 应用安装包**：`.app` / `.dmg` / `.pkg` / `.ipa`、`.deb` / `.rpm` / `.AppImage`、`.msix` / `.msi`、`.apk` / `.aab`、`.app` / `.hap`
+- [ ] **P1 语言生态包**：Python `.whl`、Node.js npm 原生包与 wasm 包、.NET `.nupkg`、Go `cgo`
+- [ ] **P2 延伸格式**：JVM fat `.jar`、Arch `.pkg.tar.zst`、NSIS `.exe`、OCI 容器镜像
+
+### 第五阶段 — 统一入口体验（`xross`）
+
+- [ ] 单一 `xross.toml` 清单文件驱动 `sysroot → compiler → forge → sign → bundle` 全流程
+- [ ] 一键发布工作流（`xross release`），本地与 GitHub Actions 零 Docker 完全一致

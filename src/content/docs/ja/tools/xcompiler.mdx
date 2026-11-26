@@ -1,0 +1,33 @@
+---
+title: xcompiler
+description: LLVM（xllvm）およびクロスGCC（xgcc）向けのポータブルなホストコンパイラマネージャー。
+---
+
+**リポジトリ:** [cross-toolchains/xcompiler](https://github.com/cross-toolchains/xcompiler) · **ステータス:** crates.ioで公開中（`v0.1.0`）
+
+`xcompiler` は、Linux、macOS、Windows上で最小構成の自己完結型クロスコンパイラを管理し、ホスト環境のコンパイラバージョンの不整合に依存しないビルドを実現します。
+
+## サブツールとアップストリーム提供元
+
+| クレート | コンパイラ | アップストリームソース |
+|---|---|---|
+| **`xllvm`** | マルチターゲット `clang` + `lld` + LLVM binutils | [cross-toolchains/llvm-slim](https://github.com/cross-toolchains/llvm-slim)<br />[mirrors.edge.kernel.org](https://mirrors.edge.kernel.org/pub/tools/llvm/files/) |
+| **`xgcc`** | MinGW-w64（`*-pc-windows-gnu`）およびベアメタル（`arm-none-eabi`, `riscv-none-elf`） | [xpack-dev-tools/mingw-w64-gcc-xpack](https://github.com/xpack-dev-tools/mingw-w64-gcc-xpack)<br />[xpack-dev-tools/arm-none-eabi-gcc-xpack](https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack)<br />[xpack-dev-tools/riscv-none-elf-gcc-xpack](https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack)<br />[arm/gnu-toolchain-for-windows-on-arm64](https://github.com/arm/gnu-toolchain-for-windows-on-arm64) |
+
+## クイック使用例
+
+```sh
+cargo install xcompiler
+
+# ホスト環境と管理下コンパイラの状態を確認
+xcompiler doctor
+
+# ポータブルなスリムLLVM（約26 MiB）をインストールして直接コンパイル
+xcompiler install llvm 23.1.6
+eval "$(xllvm env --managed)"
+clang hello.c -o hello
+
+# またはxgccでWindowsバイナリをクロスコンパイル
+xcompiler install gcc --target x86_64-pc-windows-gnu
+"$(xgcc path --target x86_64-pc-windows-gnu)" hello.c -o hello.exe
+```

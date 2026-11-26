@@ -1,0 +1,46 @@
+---
+title: 成果物ブループリント
+description: ライブラリ、実行可能ファイル、パッケージ、アプリバンドルの4層成果物アーキテクチャ。
+---
+
+`cross-toolchains` は、**ライブラリ／SDK開発者**と**アプリケーション開発者**の双方に向けて設計されています。すべての出力成果物は、次の4つの明確なレイヤーに整理されます。
+
+- **レイヤー1・2（生バイナリ＆ライブラリ）** — **`xforge`** が生成（`xcompiler` + `xsysroot` を制御）
+- **レイヤー3・4（パッケージ＆アプリバンドル）** — **`xbundle`** が構築（**`xsign`** によるクロスプラットフォーム署名に対応）
+
+## 4層成果物マトリクス
+
+| レイヤー | プラットフォーム／エコシステム | 成果物フォーマット | 生成元 | 署名（`xsign`） | 優先度 |
+|---|---|---|---|---|---|
+| **1. ライブラリ**<br />*（静的＆動的）* | Linux / Android / OpenHarmony | `.so`, `.a` | `xforge` | 任意 | P0 |
+| | Apple (macOS / iOS) | `.dylib`, `.a` | `xforge` | Codesign | P0 |
+| | Windows | `.dll` (+ `.lib`), `.lib` | `xforge` | Authenticode | P0 |
+| | Web / WASI | `.wasm` | `xforge` | — | P1 |
+| **2. 実行可能ファイル** | Windows | `.exe` | `xforge` | Authenticode | P0 |
+| | Linux / macOS / Android / OpenHarmony | `unix-exe` (ELF / Mach-O) | `xforge` | macOS Codesign | P0 |
+| **3. パッケージ**<br />*（開発者向け）* | Apple | `.xcframework` *（任意でSPM `Package.swift` / `.podspec`）* | `xbundle` | Codesign | P0 |
+| | Android | `.aar` *（任意で `+ prefab`）* | `xbundle` | — | P0 |
+| | OpenHarmony | `.har`, `.hsp`, `.hnp` | `xbundle` | 任意（`.hsp`） | P0 |
+| | C / C++ | `include/` + `.so`/`.dylib`/`.a`/`.dll` *（任意で `.pc` / `Config.cmake`）* | `xbundle` | 任意 | P0 |
+| | Python | `.whl` | `xbundle` | — | P1 |
+| | Node.js | npmネイティブパッケージ（`.node` + `.d.ts`） | `xbundle` | 任意 | P1 |
+| | Web / JS | npm wasmパッケージ（`.wasm` + `.d.ts`） | `xbundle` | — | P1 |
+| | .NET / C# | `.nupkg` | `xbundle` | 任意 | P1 |
+| | Go | cgo（Goバインディング + ビルド済みネイティブライブラリ） | `xbundle` | — | P1 |
+| | Java / Kotlin (JVM) | fat `.jar`（ネイティブライブラリ同梱） | `xbundle` | — | P2 |
+| **4. アプリバンドル**<br />*（エンドユーザー向け）* | Apple | `.app`, `.dmg`, `.pkg`, `.ipa` *（+ `unix-exe` アーカイブ）* | `xbundle` | Codesign + 公証（Notarize） | P0 |
+| | Linux | `.deb`, `.rpm`, `.AppImage` *（+ `.pkg.tar.zst` / `unix-exe` アーカイブ）* | `xbundle` | GPG（任意） | P0 |
+| | Windows | `.msix`, `.msi` *（+ `.exe` アーカイブ / NSIS）* | `xbundle` | Authenticode | P0 |
+| | Android | `.apk`, `.aab` | `xbundle` | APK署名（v2/v3） | P0 |
+| | OpenHarmony | `.app`, `.hap` | `xbundle` | Harmonyプロファイル／証明書 | P0 |
+
+## ツールチェーンの責務分担
+
+| ツール | 役割 | 対象範囲 |
+|---|---|---|
+| **`xsysroot`** | ターゲットsysroot／SDKマネージャー | `xlinux`、`xmac`、`xios`、`xdroid`、`xohos`（+ Windows MSVC向けにアップストリームの `xwin`） |
+| **`xcompiler`** | ポータブルホストコンパイラマネージャー | `xllvm`（`llvm-slim` マルチターゲットClang + LLD）および `xgcc`（MinGW／ベアメタルGCC） |
+| **`xforge`** | Docker不要のクロスビルドオーケストレーター | `xcompiler` + `xsysroot` を制御し、**レイヤー1・2**をビルド（`lipo` / `strip` を含む） |
+| **`xsign`** | 純Rust製クロスプラットフォームコード署名 | **レイヤー1〜4**にわたるApple、Windows、Android、OpenHarmony向け署名 |
+| **`xbundle`** | パッケージ＆アプリバンドラー | ネイティブホストツールなしで、**レイヤー1・2**から**レイヤー3・4**を構築 |
+| **`xross`** | 統合トップレベルCLI | エンドツーエンドパイプライン：`sysroot → compiler → forge → sign → bundle` |

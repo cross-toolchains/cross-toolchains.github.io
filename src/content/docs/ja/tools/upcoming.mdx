@@ -1,0 +1,26 @@
+---
+title: 今後の柱となるツール
+description: xforge、xsign、xbundle、xrossの設計概要。
+---
+
+`xsysroot` と `xcompiler` がcrates.ioで公開された現在、次の4つの柱がゼロDockerパイプラインを完成させます。
+
+## `xforge` — クロスビルド・オーケストレーター
+- 宣言的なターゲットマトリクス（Rust / C / C++ / CMake）を読み込み
+- `xcompiler` + `xsysroot` のリンカー、フラグ、環境変数を自動解決
+- ビルド後処理を自動化：Mach-Oユニバーサル `lipo`、シンボル `strip`、デバッグ情報の分離（`.dSYM` / `.pdb` / `.debug`）
+- **レイヤー1（ライブラリ）**および**レイヤー2（実行可能ファイル）**を生成
+
+## `xsign` — 純Rust製クロスプラットフォーム署名
+- **Apple**: Mach-O、`.app`、`.xcframework`、`.ipa` のコード署名および公証（Notarization）
+- **Windows**: `.exe`、`.dll`、`.msi`、`.msix` のAuthenticode署名
+- **Android**: APK Signature Scheme v2/v3
+- **OpenHarmony**: HAP / HSP / APP 証明書＆プロファイル署名
+
+## `xbundle` — パッケージ＆アプリバンドル
+- **開発者向けパッケージ（レイヤー3）**: `.xcframework` *（任意でSPM / `.podspec`）*、`.aar` *（任意で `+ prefab`）*、`.har` / `.hsp` / `.hnp`、C/C++ SDK、`.whl`、npmネイティブ＆wasmパッケージ、`.nupkg`、`cgo`
+- **エンドユーザー向けアプリバンドル（レイヤー4）**: `.app` / `.dmg` / `.pkg` / `.ipa`、`.deb` / `.rpm` / `.AppImage`、`.msix` / `.msi`、`.apk` / `.aab`、`.app` / `.hap`
+
+## `xross` — 統合CLI
+- 単一の `xross.toml` 設定で `sysroot → compiler → forge → sign → bundle` を一気通貫で連携
+- ローカル環境とCIで完全に同一のワークフローを実現

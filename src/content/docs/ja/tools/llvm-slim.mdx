@@ -1,0 +1,27 @@
+---
+title: llvm-slim
+description: 主要6ホストプラットフォーム向けの約26 MiB最小ポータブル・マルチターゲットLLVMビルド。
+---
+
+**リポジトリ:** [cross-toolchains/llvm-slim](https://github.com/cross-toolchains/llvm-slim) · **ライセンス:** Apache-2.0 WITH LLVM-exception
+
+公式のLLVMリリースには静的ライブラリ、MLIR、LLDB、Flang、開発用ヘッダーが含まれるため、500 MiB〜1.5 GiBものサイズになります。`llvm-slim` は、公式の `LLVM_DISTRIBUTION_COMPONENTS` を使ってアップストリームの `llvm-project` をソースからビルドし、クロスコンパイルに**本当に必要な要素だけ**を収録しています。
+
+- `clang` / `clang++`
+- `lld`（`ld.lld`, `lld-link`, `ld64.lld`, `wasm-ld`）
+- `llvm-ar`, `llvm-ranlib`, `llvm-objcopy`, `llvm-strip`, `llvm-nm`, `llvm-lib`, `llvm-dlltool`, `llvm-rc`
+- `clang-resource-headers`
+- マルチターゲットバックエンド：`X86`, `AArch64`, `ARM`, `RISCV`, `WebAssembly`
+
+Unixホストでは `LLVM_TOOL_LLVM_DRIVER_BUILD=ON` により複数のバイナリを単一のマルチコール実行ファイルに統合し、ツールチェーン全体を**約26 MiB**まで圧縮しています。
+
+## ホストマトリクス
+
+| ホストトリプル | アーカイブ形式 |
+|---|---|
+| `x86_64-unknown-linux-gnu` | `.tar.xz` |
+| `aarch64-unknown-linux-gnu` | `.tar.xz` |
+| `aarch64-apple-darwin` | `.tar.xz` |
+| `x86_64-apple-darwin` | `.tar.xz` |
+| `x86_64-pc-windows-msvc` | `.zip` |
+| `aarch64-pc-windows-msvc` | `.zip` |

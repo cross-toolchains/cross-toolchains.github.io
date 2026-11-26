@@ -1,0 +1,57 @@
+---
+title: Getting Started
+description: Install xcompiler and xsysroot to cross-compile Rust, C, and C++ without Docker.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+`cross-toolchains` lets you cross-compile from **Linux, macOS, or Windows** to any major target without Docker containers or heavy vendor IDEs.
+
+## 1. Install `xcompiler` & `xsysroot`
+
+<Tabs>
+  <TabItem label="cargo-binstall (Recommended)">
+```sh
+cargo binstall xcompiler xsysroot
+```
+  </TabItem>
+  <TabItem label="From source (crates.io)">
+```sh
+cargo install xcompiler xsysroot
+```
+  </TabItem>
+</Tabs>
+
+You can also install individual sub-tools if you only need one platform (`xllvm`, `xgcc`, `xlinux`, `xmac`, `xios`, `xdroid`, `xohos`).
+
+## 2. Install a Portable Compiler
+
+Install a minimal, self-contained LLVM toolchain (~26 MiB) containing `clang`, `lld`, and LLVM binutils:
+
+```sh
+xcompiler doctor
+xcompiler install llvm 23.1.6
+```
+
+To use the managed `clang` directly in your shell:
+
+```sh
+eval "$(xllvm env --managed)"
+clang hello.c -o hello
+```
+
+## 3. Fetch a Target Sysroot & Cross-Compile
+
+Pair your managed `xllvm` with any `xsysroot` tool — for example, targeting `x86_64-unknown-linux-gnu` from macOS or Windows:
+
+```sh
+xlinux splat --target x86_64-unknown-linux-gnu --clang "$(xllvm path --managed)"
+~/.cache/xlinux/splat/x86_64-unknown-linux-gnu.2.31/bin/x86_64-unknown-linux-gnu-clang hello.c -o hello_linux
+```
+
+For Rust projects, point Cargo's target linker at the generated wrapper:
+
+```sh
+CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="$HOME/.cache/xlinux/splat/x86_64-unknown-linux-gnu.2.31/bin/x86_64-unknown-linux-gnu-clang" \
+  cargo build --release --target x86_64-unknown-linux-gnu
+```

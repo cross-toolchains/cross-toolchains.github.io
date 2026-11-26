@@ -1,0 +1,27 @@
+---
+title: llvm-slim
+description: Compilaciones portátiles y mínimas de LLVM multidestino (~26 MiB) para las 6 principales plataformas host.
+---
+
+**Repositorio:** [cross-toolchains/llvm-slim](https://github.com/cross-toolchains/llvm-slim) · **Licencia:** Apache-2.0 WITH LLVM-exception
+
+Las versiones oficiales de LLVM pesan entre 500 MiB y 1,5 GiB porque incluyen bibliotecas estáticas, MLIR, LLDB, Flang y cabeceras de desarrollo. `llvm-slim` compila `llvm-project` desde las fuentes oficiales usando `LLVM_DISTRIBUTION_COMPONENTS` para distribuir **únicamente** lo que necesita la compilación cruzada:
+
+- `clang` / `clang++`
+- `lld` (`ld.lld`, `lld-link`, `ld64.lld`, `wasm-ld`)
+- `llvm-ar`, `llvm-ranlib`, `llvm-objcopy`, `llvm-strip`, `llvm-nm`, `llvm-lib`, `llvm-dlltool`, `llvm-rc`
+- `clang-resource-headers`
+- Backends multidestino: `X86`, `AArch64`, `ARM`, `RISCV`, `WebAssembly`
+
+En hosts Unix, `LLVM_TOOL_LLVM_DRIVER_BUILD=ON` fusiona los binarios en un único ejecutable multicall, comprimiendo toda la toolchain a **~26 MiB**.
+
+## Matriz de hosts
+
+| Tripleta de host | Formato de archivo |
+|---|---|
+| `x86_64-unknown-linux-gnu` | `.tar.xz` |
+| `aarch64-unknown-linux-gnu` | `.tar.xz` |
+| `aarch64-apple-darwin` | `.tar.xz` |
+| `x86_64-apple-darwin` | `.tar.xz` |
+| `x86_64-pc-windows-msvc` | `.zip` |
+| `aarch64-pc-windows-msvc` | `.zip` |

@@ -1,0 +1,31 @@
+---
+title: xsysroot
+description: Linux、macOS、iOS、Android、OpenHarmony向けのDocker不要なターゲットsysroot＆SDKマネージャー。
+---
+
+**リポジトリ:** [cross-toolchains/xsysroot](https://github.com/cross-toolchains/xsysroot) · **ステータス:** crates.ioで公開中（`v0.1.0`）
+
+`xsysroot` は、ターゲットプラットフォームのヘッダー、ライブラリ、ランタイムスタブを公式のアップストリームCDNから直接取得し（明示的なライセンス同意の下で動作し、SDKの再配布は行いません）、Linux、macOS、Windows上でネイティブなClang/LLDリンカーラッパーを生成します。
+
+## 含まれるツール
+
+| クレート | ターゲットプラットフォーム | 主な特徴 |
+|---|---|---|
+| `xlinux` | Linux（`glibc` & `musl`） | 広範なバイナリ互換性のために古いglibcバージョンをクリーンにターゲット指定可能 |
+| `xmac` | macOS（`x86_64` & `aarch64`） | Windowsでも安全なシンボリックリンク処理でmacOS SDKを直接展開 |
+| `xios` | iOS（実機 & シミュレーター） | `--from <iPhoneOS*.sdk>` による直接指定やXcode SDKからの展開に対応 |
+| `xdroid` | Android（`arm64-v8a`, `armeabi-v7a`, `x86_64`） | ABIごとのLLVMランタイムライブラリ（約2.5 MiB）を同梱し、ワークアラウンドなしでリンク可能 |
+| `xohos` | OpenHarmony（`aarch64`, `armv7`, `x86_64`） | LLVMランタイム同梱＆resource-dir自動設定を備えたTier-2 Rustターゲット対応 |
+| `xwin` *（アップストリーム）* | Windows MSVC | [Jake-Shadle/xwin](https://github.com/Jake-Shadle/xwin) とシームレスに連携 |
+
+## クイック使用例
+
+```sh
+cargo install xsysroot
+
+# Linux glibc sysrootを展開
+xlinux splat --target x86_64-unknown-linux-gnu
+
+# Android arm64 sysrootを展開
+xdroid splat --target aarch64-linux-android --accept-license
+```

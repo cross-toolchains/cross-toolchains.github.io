@@ -1,0 +1,37 @@
+---
+title: Feuille de route
+description: Phases de développement couvrant xsysroot, xcompiler, xforge, xsign, xbundle et xross.
+---
+
+### Phase 1 — Fondations (`xsysroot` et `xcompiler`)
+
+- [x] `xsysroot` : `xlinux`, `xmac`, `xios`, `xdroid`, `xohos` avec CI multiplateforme 6/6 (Linux / macOS / Windows)
+- [x] `xcompiler` : espace de travail unifié `xllvm` + `xgcc` publié sur crates.io (`v0.1.0`)
+- [x] `llvm-slim` : matrice complète de binaires portables sur 6 hôtes (`x86_64` / `aarch64` × Linux / macOS / Windows)
+- [ ] `xmingw` (P1 optionnel) : sysroot UCRT léger pour `*-pc-windows-gnullvm`
+
+### Phase 2 — Orchestration de compilation croisée (`xforge`)
+
+- [ ] Matrice de compilation multi-cibles déclarative (Rust / C / C++ / CMake)
+- [ ] Configuration automatique des éditeurs de liens, drapeaux et variables d'environnement de `xcompiler` + `xsysroot`
+- [ ] Outils post-compilation : `lipo` universel Mach-O, `strip` des symboles et séparation `.dSYM` / `.pdb` / `.debug`
+- [ ] Production directe de la **Couche 1 (Bibliothèques)** et de la **Couche 2 (Exécutables)**
+
+### Phase 3 — Signature multiplateforme (`xsign`)
+
+- [ ] Apple Codesign (Mach-O, `.app`, `.xcframework`, `.ipa`) et notarisation
+- [ ] Windows Authenticode (`.exe`, `.dll`, `.msi`, `.msix`)
+- [ ] Android APK Signature Scheme v2/v3 (`.apk`, `.aab`)
+- [ ] Signature OpenHarmony HAP / HSP / APP
+
+### Phase 4 — Empaquetage (`xbundle`)
+
+- [ ] **Paquets natifs P0** : `.xcframework` *(SPM / `.podspec` optionnels)*, `.aar` *(`+ prefab` optionnel)*, `.har` / `.hsp` / `.hnp`, archives SDK C/C++
+- [ ] **Bundles d'applications P0** : `.app` / `.dmg` / `.pkg` / `.ipa`, `.deb` / `.rpm` / `.AppImage`, `.msix` / `.msi`, `.apk` / `.aab`, `.app` / `.hap`
+- [ ] **Paquets d'écosystèmes de langages P1** : Python `.whl`, paquets npm natifs et wasm pour Node.js, `.NET` `.nupkg`, Go `cgo`
+- [ ] **Extensions P2** : fat `.jar` JVM, Arch `.pkg.tar.zst`, NSIS `.exe`, images de conteneurs OCI
+
+### Phase 5 — Expérience unifiée (`xross`)
+
+- [ ] Manifeste de projet unique `xross.toml` pilotant `sysroot → compiler → forge → sign → bundle`
+- [ ] Flux de publication en une commande (`xross release`) pour GitHub Actions et les compilations locales sans Docker

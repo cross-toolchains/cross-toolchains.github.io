@@ -1,0 +1,82 @@
+---
+title: Xross
+description: 更好、更简、更快的零 Docker 跨平台编译工具链。
+editUrl: false
+lastUpdated: false
+template: splash
+tableOfContents: false
+prev: false
+next: false
+---
+
+import { Card, CardGrid, Tabs, TabItem } from '@astrojs/starlight/components';
+import Hero from '../../../components/Hero.astro';
+import '../../../styles/home.css';
+
+<Hero
+  slogan="从任意宿主机，构建到任意目标平台。"
+  summary="更好、更简、更快的纯 Rust 跨平台编译工具链。零 Docker、零巨无霸厂商 IDE——一台机器完成多平台编译、签名与打包。"
+  getStarted="快速开始"
+  blueprint="产物蓝图"
+  getStartedHref="/zh-cn/overview/getting-started/"
+  blueprintHref="/zh-cn/overview/blueprint/"
+/>
+
+<div>
+  <Card title="快速上手" icon="rocket">
+    <Tabs>
+      <TabItem label="cargo-binstall">
+```sh frame="none"
+cargo binstall xcompiler xsysroot
+xcompiler install llvm 23.1.6
+xlinux splat --target x86_64-unknown-linux-gnu --clang "$(xllvm path --managed)"
+```
+      </TabItem>
+      <TabItem label="cargo install">
+```sh frame="none"
+cargo install xcompiler xsysroot
+xcompiler install llvm 23.1.6
+xlinux splat --target x86_64-unknown-linux-gnu --clang "$(xllvm path --managed)"
+```
+      </TabItem>
+    </Tabs>
+  </Card>
+</div>
+
+<CardGrid>
+  <a href="/zh-cn/overview/getting-started/" class="card-link not-content">
+    <Card title="宿主机直编，零 Docker，零虚拟机" icon="rocket">
+      告别动辄数 GB 的容器镜像、缓慢的 QEMU 模拟和 CI 里的 Docker 套娃。直接以宿主机原生速度完成交叉编译。
+    </Card>
+  </a>
+
+  <a href="/zh-cn/tools/xsysroot/" class="card-link not-content">
+    <Card title="告别巨无霸厂商 IDE" icon="puzzle">
+      不用为了链接一个二进制去装 20 GB 的 Xcode、Android Studio 或 Visual Studio。直接从官方上游按需拉取目标头文件与库。
+    </Card>
+  </a>
+
+  <a href="/zh-cn/overview/getting-started/" class="card-link not-content">
+    <Card title="一台机器，构建全平台" icon="laptop">
+      从 Linux、macOS 或 Windows 任意宿主机出发，直接面向 Linux、macOS、iOS、Windows、Android、OpenHarmony 与 WebAssembly 编译。
+    </Card>
+  </a>
+
+  <a href="/zh-cn/tools/xcompiler/" class="card-link not-content">
+    <Card title="终结编译器版本地狱" icon="star">
+      秒装便携精简 LLVM（<code>clang</code> + <code>lld</code> + binutils）或交叉 GCC，本地开发与 CI 环境工具链完全一致。
+    </Card>
+  </a>
+
+  <a href="/zh-cn/overview/blueprint/" class="card-link not-content">
+    <Card title="直出 SDK 包与应用安装包" icon="open-book">
+      不止于裸二进制：跨平台直接打包 <code>.xcframework</code>、<code>.aar</code>、<code>.har</code>/<code>.hnp</code>、<code>.whl</code>、<code>.dmg</code>、<code>.deb</code>、<code>.msix</code>、<code>.apk</code> 与 <code>.hap</code>。
+    </Card>
+  </a>
+
+  <a href="/zh-cn/overview/roadmap/" class="card-link not-content">
+    <Card title="模块化纯 Rust 套件" icon="setting">
+      可以只单用 <code>xlinux</code> 或 <code>xllvm</code>，也可以用 <code>xross</code> 一键串联 <code>xsysroot</code> → <code>xcompiler</code> → <code>xforge</code> → <code>xsign</code> → <code>xbundle</code>。
+    </Card>
+  </a>
+</CardGrid>

@@ -1,0 +1,68 @@
+[
+  {
+    "label": "xsysroot",
+    "collapsed": true,
+    "items": [
+      {
+        "label": "xsysroot",
+        "slug": "releases/xsysroot/xsysroot"
+      },
+      {
+        "label": "xlinux",
+        "slug": "releases/xsysroot/xlinux"
+      },
+      {
+        "label": "xmac",
+        "slug": "releases/xsysroot/xmac"
+      },
+      {
+        "label": "xios",
+        "slug": "releases/xsysroot/xios"
+      },
+      {
+        "label": "xdroid",
+        "slug": "releases/xsysroot/xdroid"
+      },
+      {
+        "label": "xohos",
+        "slug": "releases/xsysroot/xohos"
+      },
+      {
+        "label": "xsysroot-core",
+        "slug": "releases/xsysroot/xsysroot-core"
+      }
+    ]
+  },
+  {
+    "label": "xcompiler",
+    "collapsed": true,
+    "items": [
+      {
+        "label": "xcompiler",
+        "slug": "releases/xcompiler/xcompiler"
+      },
+      {
+        "label": "xllvm",
+        "slug": "releases/xcompiler/xllvm"
+      },
+      {
+        "label": "xgcc",
+        "slug": "releases/xcompiler/xgcc"
+      },
+      {
+        "label": "xcompiler-core",
+        "slug": "releases/xcompiler/xcompiler-core"
+      }
+    ]
+  },
+  {
+    "label": "llvm-slim",
+    "collapsed": true,
+    "items": [
+      {
+        "label": "llvm-23.1.6",
+        "slug": "releases/llvm-slim/llvm-23-1-6"
+      }
+    ]
+  }
+]

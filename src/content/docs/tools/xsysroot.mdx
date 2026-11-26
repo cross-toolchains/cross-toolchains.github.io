@@ -1,0 +1,31 @@
+---
+title: xsysroot
+description: Zero-Docker target sysroot & SDK manager for Linux, macOS, iOS, Android, and OpenHarmony.
+---
+
+**Repository:** [cross-toolchains/xsysroot](https://github.com/cross-toolchains/xsysroot) · **Status:** Live on crates.io (`v0.1.0`)
+
+`xsysroot` fetches target platform headers, libraries, and runtime stubs directly from official upstream CDNs (with explicit license confirmation — no SDK redistribution) and generates native Clang/LLD linker wrappers on Linux, macOS, and Windows.
+
+## Included Tools
+
+| Crate | Target Platform | Highlights |
+|---|---|---|
+| `xlinux` | Linux (`glibc` & `musl`) | Targets older glibc versions cleanly for broad binary compatibility |
+| `xmac` | macOS (`x86_64` & `aarch64`) | Extracts macOS SDK directly with Windows-safe symlink handling |
+| `xios` | iOS (device & simulator) | Supports direct `--from <iPhoneOS*.sdk>` or Xcode SDK extraction |
+| `xdroid` | Android (`arm64-v8a`, `armeabi-v7a`, `x86_64`) | Bundles per-ABI LLVM runtime libs (~2.5 MiB) for zero-hack linking |
+| `xohos` | OpenHarmony (`aarch64`, `armv7`, `x86_64`) | Tier-2 Rust targets with bundled LLVM runtime + resource-dir wiring |
+| `xwin` *(upstream)* | Windows MSVC | Pairs seamlessly with [Jake-Shadle/xwin](https://github.com/Jake-Shadle/xwin) |
+
+## Quick Usage
+
+```sh
+cargo install xsysroot
+
+# Splat a Linux glibc sysroot
+xlinux splat --target x86_64-unknown-linux-gnu
+
+# Splat an Android arm64 sysroot
+xdroid splat --target aarch64-linux-android --accept-license
+```

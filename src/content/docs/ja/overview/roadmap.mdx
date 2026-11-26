@@ -1,0 +1,37 @@
+---
+title: ロードマップ
+description: xsysroot、xcompiler、xforge、xsign、xbundle、xrossの開発フェーズ。
+---
+
+### Phase 1 — 基盤（`xsysroot` & `xcompiler`）
+
+- [x] `xsysroot`: `xlinux`、`xmac`、`xios`、`xdroid`、`xohos`（Linux / macOS / Windowsの6/6クロスプラットフォームCI対応）
+- [x] `xcompiler`: `xllvm` + `xgcc` 統合ワークスペースをcrates.ioで公開（`v0.1.0`）
+- [x] `llvm-slim`: 6ホスト完全対応のポータブルバイナリマトリクス（`x86_64` / `aarch64` × Linux / macOS / Windows）
+- [ ] `xmingw`（任意・P1）: `*-pc-windows-gnullvm` 向けの軽量UCRT sysroot
+
+### Phase 2 — クロスビルド・オーケストレーション（`xforge`）
+
+- [ ] 宣言的なマルチターゲットビルドマトリクス（Rust / C / C++ / CMake）
+- [ ] `xcompiler` + `xsysroot` のリンカー、フラグ、環境変数の自動接続
+- [ ] ビルド後ヘルパー：ユニバーサルMach-Oの `lipo`、シンボルの `strip`、および `.dSYM` / `.pdb` / `.debug` の分離
+- [ ] **レイヤー1（ライブラリ）**および**レイヤー2（実行可能ファイル）**の直接出力
+
+### Phase 3 — クロスプラットフォーム署名（`xsign`）
+
+- [ ] Apple Codesign（Mach-O、`.app`、`.xcframework`、`.ipa`）および公証（Notarization）
+- [ ] Windows Authenticode（`.exe`、`.dll`、`.msi`、`.msix`）
+- [ ] Android APK Signature Scheme v2/v3（`.apk`、`.aab`）
+- [ ] OpenHarmony HAP / HSP / APP 署名
+
+### Phase 4 — パッケージング（`xbundle`）
+
+- [ ] **P0 ネイティブパッケージ**: `.xcframework` *（任意でSPM / `.podspec`）*、`.aar` *（任意で `+ prefab`）*、`.har` / `.hsp` / `.hnp`、C/C++ SDKアーカイブ
+- [ ] **P0 アプリバンドル**: `.app` / `.dmg` / `.pkg` / `.ipa`、`.deb` / `.rpm` / `.AppImage`、`.msix` / `.msi`、`.apk` / `.aab`、`.app` / `.hap`
+- [ ] **P1 言語エコシステムパッケージ**: Python `.whl`、Node.js npmネイティブ＆wasmパッケージ、`.NET` `.nupkg`、Go `cgo`
+- [ ] **P2 拡張フォーマット**: JVM fat `.jar`、Arch `.pkg.tar.zst`、NSIS `.exe`、OCIコンテナイメージ
+
+### Phase 5 — 統合体験（`xross`）
+
+- [ ] 単一の `xross.toml` プロジェクトマニフェストで `sysroot → compiler → forge → sign → bundle` を一括制御
+- [ ] GitHub ActionsおよびローカルのゼロDockerビルド向けのワンコマンドリリースワークフロー（`xross release`）

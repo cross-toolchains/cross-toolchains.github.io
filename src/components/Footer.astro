@@ -1,0 +1,24 @@
+---
+import Default from '@astrojs/starlight/components/Footer.astro';
+---
+
+<Default><slot /></Default>
+
+<div class="xt-footer">
+	<p>© {new Date().getFullYear()} Cross-Toolchains Contributors. MIT / Apache-2.0</p>
+</div>
+
+<style>
+	.xt-footer {
+		margin-top: 3rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--sl-color-hairline);
+		text-align: center;
+	}
+
+	.xt-footer p {
+		margin: 0;
+		font-size: 0.82rem;
+		color: var(--sl-color-gray-3);
+	}
+</style>

@@ -1,0 +1,33 @@
+---
+title: xcompiler
+description: 面向 LLVM（xllvm）与交叉 GCC（xgcc）的便携宿主机编译器管理器。
+---
+
+**仓库：** [cross-toolchains/xcompiler](https://github.com/cross-toolchains/xcompiler) · **状态：** 已发布 crates.io（`v0.1.0`）
+
+`xcompiler` 在 Linux、macOS 与 Windows 上管理精简、自包含的便携交叉编译器，彻底消除宿主机编译器版本漂移问题。
+
+## 子工具与上游来源
+
+| Crate | 编译器 | 上游来源 |
+|---|---|---|
+| **`xllvm`** | 多目标 `clang` + `lld` + LLVM binutils | [cross-toolchains/llvm-slim](https://github.com/cross-toolchains/llvm-slim)<br />[mirrors.edge.kernel.org](https://mirrors.edge.kernel.org/pub/tools/llvm/files/) |
+| **`xgcc`** | MinGW-w64（`*-pc-windows-gnu`）与裸机（`arm-none-eabi`、`riscv-none-elf`） | [xpack-dev-tools/mingw-w64-gcc-xpack](https://github.com/xpack-dev-tools/mingw-w64-gcc-xpack)<br />[xpack-dev-tools/arm-none-eabi-gcc-xpack](https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack)<br />[xpack-dev-tools/riscv-none-elf-gcc-xpack](https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack)<br />[arm/gnu-toolchain-for-windows-on-arm64](https://github.com/arm/gnu-toolchain-for-windows-on-arm64) |
+
+## 快速使用
+
+```sh frame="none"
+cargo install xcompiler
+
+# 检查宿主机与托管编译器状态
+xcompiler doctor
+
+# 安装便携精简 LLVM 并直接编译
+xcompiler install llvm 23.1.6
+eval "$(xllvm env --managed)"
+clang hello.c -o hello
+
+# 或使用 xgcc 直接交叉编译 Windows 可执行程序
+xcompiler install gcc --target x86_64-pc-windows-gnu
+"$(xgcc path --target x86_64-pc-windows-gnu)" hello.c -o hello.exe
+```

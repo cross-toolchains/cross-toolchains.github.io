@@ -1,0 +1,27 @@
+---
+title: llvm-slim
+description: 面向全部 6 大宿主机平台的精简便携多目标 LLVM 构建。
+---
+
+**仓库：** [cross-toolchains/llvm-slim](https://github.com/cross-toolchains/llvm-slim) · **协议：** Apache-2.0 WITH LLVM-exception
+
+官方 LLVM 发行包动辄 500 MiB–1.5 GiB（包含静态库、MLIR、LLDB、Flang 与大量开发头文件）。`llvm-slim` 从上游 `llvm-project` 源码使用官方 `LLVM_DISTRIBUTION_COMPONENTS` 精简构建，**只保留**交叉编译必需的核心工具：
+
+- `clang` / `clang++`
+- `lld`（`ld.lld`、`lld-link`、`ld64.lld`、`wasm-ld`）
+- `llvm-ar`、`llvm-ranlib`、`llvm-objcopy`、`llvm-strip`、`llvm-nm`、`llvm-lib`、`llvm-dlltool`、`llvm-rc`
+- `clang-resource-headers`
+- 全多目标后端：`X86`、`AArch64`、`ARM`、`RISCV`、`WebAssembly`
+
+在 Unix 宿主机上启用 `LLVM_TOOL_LLVM_DRIVER_BUILD=ON` 将所有二进制合并为单个 multicall 可执行文件，整包压缩后仅 **~25–29 MiB**。
+
+## 宿主机矩阵
+
+| 宿主机三元组 | 归档格式 |
+|---|---|
+| `x86_64-unknown-linux-gnu` | `.tar.xz` |
+| `aarch64-unknown-linux-gnu` | `.tar.xz` |
+| `aarch64-apple-darwin` | `.tar.xz` |
+| `x86_64-apple-darwin` | `.tar.xz` |
+| `x86_64-pc-windows-msvc` | `.zip` |
+| `aarch64-pc-windows-msvc` | `.zip` |

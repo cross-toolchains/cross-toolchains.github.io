@@ -1,0 +1,26 @@
+---
+title: Piliers à venir
+description: Aperçu de la conception de xforge, xsign, xbundle et xross.
+---
+
+Avec `xsysroot` et `xcompiler` déjà disponibles sur crates.io, les quatre piliers suivants complètent le pipeline sans Docker :
+
+## `xforge` — Orchestrateur de compilation croisée
+- Lit une matrice de cibles déclarative (Rust / C / C++ / CMake)
+- Résout automatiquement les éditeurs de liens, drapeaux et variables d'environnement de `xcompiler` + `xsysroot`
+- Gère les étapes post-compilation : `lipo` universel Mach-O, `strip` des symboles et séparation des informations de débogage (`.dSYM` / `.pdb` / `.debug`)
+- Produit la **Couche 1 (Bibliothèques)** et la **Couche 2 (Exécutables)**
+
+## `xsign` — Signature multiplateforme en pur Rust
+- **Apple** : signature de code et notarisation Mach-O, `.app`, `.xcframework`, `.ipa`
+- **Windows** : signature Authenticode pour `.exe`, `.dll`, `.msi`, `.msix`
+- **Android** : APK Signature Scheme v2/v3
+- **OpenHarmony** : signature de certificats et profils HAP / HSP / APP
+
+## `xbundle` — Paquets et bundles d'applications
+- **Paquets développeurs (Couche 3)** : `.xcframework` *(SPM / `.podspec` optionnels)*, `.aar` *(`+ prefab` optionnel)*, `.har` / `.hsp` / `.hnp`, SDK C/C++, `.whl`, paquets npm natifs et wasm, `.nupkg`, `cgo`
+- **Bundles d'applications utilisateurs finaux (Couche 4)** : `.app` / `.dmg` / `.pkg` / `.ipa`, `.deb` / `.rpm` / `.AppImage`, `.msix` / `.msi`, `.apk` / `.aab`, `.app` / `.hap`
+
+## `xross` — CLI unifiée
+- Configuration unique `xross.toml` enchaînant `sysroot → compiler → forge → sign → bundle`
+- Flux de travail identique en local et en CI

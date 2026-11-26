@@ -1,0 +1,31 @@
+---
+title: xsysroot
+description: 面向 Linux、macOS、iOS、Android 与 OpenHarmony 的零 Docker 目标 Sysroot / SDK 管理工具。
+---
+
+**仓库：** [cross-toolchains/xsysroot](https://github.com/cross-toolchains/xsysroot) · **状态：** 已发布 crates.io（`v0.1.0`）
+
+`xsysroot` 直接从官方上游 CDN 拉取目标平台头文件、库文件与运行时桩（需显式确认协议，零 SDK 二次分发），并在 Linux、macOS 与 Windows 上生成开箱即用的原生 Clang/LLD 包装脚本。
+
+## 包含组件
+
+| Crate | 目标平台 | 特性亮点 |
+|---|---|---|
+| `xlinux` | Linux（`glibc` & `musl`） | 支持锁定低版本 glibc，确保极广的 Linux 发行版兼容性 |
+| `xmac` | macOS（`x86_64` & `aarch64`） | 直接提取 macOS SDK，内置 Windows 兼容软链接处理 |
+| `xios` | iOS（真机 & 模拟器） | 支持直接 `--from <iPhoneOS*.sdk>` 或从 Xcode 提取 |
+| `xdroid` | Android（`arm64-v8a`、`armeabi-v7a`、`x86_64`） | 内置各 ABI 独立 LLVM 运行时库，开箱即链接无需黑魔法 |
+| `xohos` | OpenHarmony（`aarch64`、`armv7`、`x86_64`） | 覆盖全部 Rust Tier-2 鸿蒙目标，自动配好运行时与 `resource-dir` |
+| `xwin` *（上游）* | Windows MSVC | 与 [Jake-Shadle/xwin](https://github.com/Jake-Shadle/xwin) 无缝配合 |
+
+## 快速使用
+
+```sh frame="none"
+cargo install xsysroot
+
+# 生成 Linux glibc sysroot
+xlinux splat --target x86_64-unknown-linux-gnu
+
+# 生成 Android arm64 sysroot
+xdroid splat --target aarch64-linux-android --accept-license
+```

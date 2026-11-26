@@ -1,0 +1,82 @@
+---
+title: Xross
+description: Des chaînes d'outils de compilation croisée meilleures, plus simples et plus rapides — sans Docker, depuis n'importe où.
+editUrl: false
+lastUpdated: false
+template: splash
+tableOfContents: false
+prev: false
+next: false
+---
+
+import { Card, CardGrid, Tabs, TabItem } from '@astrojs/starlight/components';
+import Hero from '../../../components/Hero.astro';
+import '../../../styles/home.css';
+
+<Hero
+  slogan="Compilez pour partout, depuis n'importe où."
+  summary="Des chaînes d'outils de compilation croisée meilleures, plus simples et plus rapides en pur Rust. Sans Docker, sans IDE lourd — compilez, signez et empaquetez des bibliothèques et applications natives depuis un seul hôte."
+  getStarted="Démarrer"
+  blueprint="Architecture des artefacts"
+  getStartedHref="/fr/overview/getting-started/"
+  blueprintHref="/fr/overview/blueprint/"
+/>
+
+<div>
+  <Card title="Démarrage rapide" icon="rocket">
+    <Tabs>
+      <TabItem label="cargo-binstall">
+```sh frame="none"
+cargo binstall xcompiler xsysroot
+xcompiler install llvm 23.1.6
+xlinux splat --target x86_64-unknown-linux-gnu --clang "$(xllvm path --managed)"
+```
+      </TabItem>
+      <TabItem label="cargo install">
+```sh frame="none"
+cargo install xcompiler xsysroot
+xcompiler install llvm 23.1.6
+xlinux splat --target x86_64-unknown-linux-gnu --clang "$(xllvm path --managed)"
+```
+      </TabItem>
+    </Tabs>
+  </Card>
+</div>
+
+<CardGrid>
+  <a href="/fr/overview/getting-started/" class="card-link not-content">
+    <Card title="Compilations natives, sans Docker ni VM" icon="rocket">
+      Évitez les images de conteneurs de plusieurs gigaoctets, l'émulation QEMU lente et les casse-têtes Docker-in-Docker en CI. Compilez en croisé nativement à pleine vitesse sur l'hôte.
+    </Card>
+  </a>
+
+  <a href="/fr/tools/xsysroot/" class="card-link not-content">
+    <Card title="Sans IDE constructeur lourd" icon="puzzle">
+      N'installez pas 20 Go de Xcode, Android Studio ou Visual Studio juste pour lier un binaire. Récupérez uniquement les en-têtes et bibliothèques cibles dont vous avez besoin directement en amont.
+    </Card>
+  </a>
+
+  <a href="/fr/overview/getting-started/" class="card-link not-content">
+    <Card title="Multiplateforme, depuis n'importe où" icon="laptop">
+      Compilez pour Linux, macOS, iOS, Windows, Android, OpenHarmony et WebAssembly — directement depuis votre machine Linux, macOS ou Windows.
+    </Card>
+  </a>
+
+  <a href="/fr/tools/xcompiler/" class="card-link not-content">
+    <Card title="Fini l'enfer des versions de compilateurs" icon="star">
+      Installez un LLVM portable minimal (<code>clang</code> + <code>lld</code> + binutils) ou un GCC croisé en quelques secondes. Des versions de chaînes d'outils identiques en local et en CI.
+    </Card>
+  </a>
+
+  <a href="/fr/overview/blueprint/" class="card-link not-content">
+    <Card title="Livrez bibliothèques et bundles d'apps" icon="open-book">
+      Allez au-delà des binaires bruts : empaquetez en <code>.xcframework</code>, <code>.aar</code>, <code>.har</code>/<code>.hnp</code>, <code>.whl</code>, <code>.dmg</code>, <code>.deb</code>, <code>.msix</code>, <code>.apk</code> et <code>.hap</code> sur n'importe quel hôte.
+    </Card>
+  </a>
+
+  <a href="/fr/overview/roadmap/" class="card-link not-content">
+    <Card title="Suite modulaire en pur Rust" icon="setting">
+      Utilisez dès aujourd'hui un outil autonome comme <code>xlinux</code> ou <code>xllvm</code>, ou enchaînez <code>xsysroot</code> → <code>xcompiler</code> → <code>xforge</code> → <code>xsign</code> → <code>xbundle</code> avec <code>xross</code>.
+    </Card>
+  </a>
+</CardGrid>

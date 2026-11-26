@@ -1,0 +1,46 @@
+---
+title: 产物蓝图
+description: 覆盖静态/动态库、可执行程序、软件包与应用包的 4 层产物架构。
+---
+
+**Xross** 同时服务于**库 / SDK 开发者**与**应用开发者**，所有交付产物清晰划分为 4 个层级：
+
+- **第 1、2 层（裸库与可执行程序）** — 由 **`xforge`** 驱动 `xcompiler` + `xsysroot` 直接编译产出
+- **第 3、4 层（软件包与应用包）** — 由 **`xbundle`** 跨平台组装，并由 **`xsign`** 提供纯 Rust 代码签名
+
+## 四层产物矩阵
+
+| 层级 | 平台 / 生态 | 产物格式 | 产出工具 | 签名 (`xsign`) | 优先级 |
+|---|---|---|---|---|---|
+| **1. 静态 / 动态库** | Linux / Android / OpenHarmony | `.so`, `.a` | `xforge` | 可选 | P0 |
+| | Apple (macOS / iOS) | `.dylib`, `.a` | `xforge` | Codesign | P0 |
+| | Windows | `.dll` (+ `.lib`), `.lib` | `xforge` | Authenticode | P0 |
+| | Web / WASI | `.wasm` | `xforge` | — | P1 |
+| **2. 可执行程序** | Windows | `.exe` | `xforge` | Authenticode | P0 |
+| | Linux / macOS / Android / OpenHarmony | `unix-exe`（ELF / Mach-O） | `xforge` | macOS Codesign | P0 |
+| **3. 软件包**<br />*(面向开发者)* | Apple | `.xcframework` *（可选 SPM `Package.swift` / `.podspec`）* | `xbundle` | Codesign | P0 |
+| | Android | `.aar` *（可选 `+ prefab`）* | `xbundle` | — | P0 |
+| | OpenHarmony | `.har`, `.hsp`, `.hnp` | `xbundle` | 可选（`.hsp`） | P0 |
+| | C / C++ | `include/` + `.so`/`.dylib`/`.a`/`.dll` *（可选 `.pc` / `Config.cmake`）* | `xbundle` | 可选 | P0 |
+| | Python | `.whl` | `xbundle` | — | P1 |
+| | Node.js | npm 原生包（`.node` + `.d.ts`） | `xbundle` | 可选 | P1 |
+| | Web / JS | npm wasm 包（`.wasm` + `.d.ts`） | `xbundle` | — | P1 |
+| | .NET / C# | `.nupkg` | `xbundle` | 可选 | P1 |
+| | Go | cgo（Go 绑定 + 预编译原生库） | `xbundle` | — | P1 |
+| | Java / Kotlin (JVM) | fat `.jar`（内置原生库） | `xbundle` | — | P2 |
+| **4. 应用包**<br />*(面向终端用户)* | Apple | `.app`, `.dmg`, `.pkg`, `.ipa` *（+ `unix-exe` 归档）* | `xbundle` | Codesign + Notarize | P0 |
+| | Linux | `.deb`, `.rpm`, `.AppImage` *（+ `.pkg.tar.zst` / `unix-exe` 归档）* | `xbundle` | GPG（可选） | P0 |
+| | Windows | `.msix`, `.msi` *（+ `.exe` 归档 / NSIS）* | `xbundle` | Authenticode | P0 |
+| | Android | `.apk`, `.aab` | `xbundle` | APK 签名 (v2/v3) | P0 |
+| | OpenHarmony | `.app`, `.hap` | `xbundle` | Harmony Profile / Cert | P0 |
+
+## 工具链职责总览
+
+| 工具 | 定位 | 负责范围 |
+|---|---|---|
+| **`xsysroot`** | 目标平台 Sysroot / SDK 管理 | `xlinux`、`xmac`、`xios`、`xdroid`、`xohos`（+ 上游 `xwin` 支持 Windows MSVC） |
+| **`xcompiler`** | 宿主机便携编译器管理 | `xllvm`（对接 `llvm-slim` 多目标 Clang + LLD）与 `xgcc`（MinGW / 嵌入式 GCC） |
+| **`xforge`** | 零 Docker 跨平台构建编排 | 驱动 `xcompiler` + `xsysroot` 产出 **第 1、2 层**（含 `lipo` / `strip`） |
+| **`xsign`** | 纯 Rust 跨平台代码签名 | 贯通 **第 1–4 层** 的 Apple / Windows / Android / OpenHarmony 签名 |
+| **`xbundle`** | 软件包与应用包组装 | 无需原生宿主机，将 **第 1、2 层** 组装为 **第 3、4 层** |
+| **`xross`** | 统一顶层入口 CLI | 一键串联 `sysroot → compiler → forge → sign → bundle` |

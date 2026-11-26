@@ -1,0 +1,46 @@
+---
+title: Artefakt-Blaupause
+description: Die 4-Schichten-Artefakt-Architektur für Bibliotheken, ausführbare Dateien, Pakete und App-Bundles.
+---
+
+`cross-toolchains` ist sowohl für **Bibliotheks- und SDK-Autoren** als auch für **Anwendungsentwickler** konzipiert. Alle Ausgaben sind sauber in vier Schichten gegliedert:
+
+- **Schichten 1 & 2 (Rohe Binaries & Bibliotheken)** — erzeugt von **`xforge`** (steuert `xcompiler` + `xsysroot`)
+- **Schichten 3 & 4 (Pakete & App-Bundles)** — zusammengestellt von **`xbundle`** (mit plattformübergreifender Signierung über **`xsign`**)
+
+## 4-Schichten-Artefakt-Matrix
+
+| Schicht | Plattform / Ökosystem | Artefaktformate | Erzeuger | Signierung (`xsign`) | Priorität |
+|---|---|---|---|---|---|
+| **1. Bibliotheken**<br />*(Statisch & Dynamisch)* | Linux / Android / OpenHarmony | `.so`, `.a` | `xforge` | Optional | P0 |
+| | Apple (macOS / iOS) | `.dylib`, `.a` | `xforge` | Codesign | P0 |
+| | Windows | `.dll` (+ `.lib`), `.lib` | `xforge` | Authenticode | P0 |
+| | Web / WASI | `.wasm` | `xforge` | — | P1 |
+| **2. Ausführbare Dateien** | Windows | `.exe` | `xforge` | Authenticode | P0 |
+| | Linux / macOS / Android / OpenHarmony | `unix-exe` (ELF / Mach-O) | `xforge` | macOS Codesign | P0 |
+| **3. Pakete**<br />*(Für Entwickler)* | Apple | `.xcframework` *(optional SPM `Package.swift` / `.podspec`)* | `xbundle` | Codesign | P0 |
+| | Android | `.aar` *(optional `+ prefab`)* | `xbundle` | — | P0 |
+| | OpenHarmony | `.har`, `.hsp`, `.hnp` | `xbundle` | Optional (`.hsp`) | P0 |
+| | C / C++ | `include/` + `.so`/`.dylib`/`.a`/`.dll` *(optional `.pc` / `Config.cmake`)* | `xbundle` | Optional | P0 |
+| | Python | `.whl` | `xbundle` | — | P1 |
+| | Node.js | Natives npm-Paket (`.node` + `.d.ts`) | `xbundle` | Optional | P1 |
+| | Web / JS | npm-Wasm-Paket (`.wasm` + `.d.ts`) | `xbundle` | — | P1 |
+| | .NET / C# | `.nupkg` | `xbundle` | Optional | P1 |
+| | Go | cgo (Go-Bindings + vorkompilierte native Bibliotheken) | `xbundle` | — | P1 |
+| | Java / Kotlin (JVM) | Fat-`.jar` (eingebettete native Bibliotheken) | `xbundle` | — | P2 |
+| **4. App-Bundles**<br />*(Für Endnutzer)* | Apple | `.app`, `.dmg`, `.pkg`, `.ipa` *(+ `unix-exe`-Archiv)* | `xbundle` | Codesign + Notarisierung | P0 |
+| | Linux | `.deb`, `.rpm`, `.AppImage` *(+ `.pkg.tar.zst` / `unix-exe`-Archiv)* | `xbundle` | GPG (optional) | P0 |
+| | Windows | `.msix`, `.msi` *(+ `.exe`-Archiv / NSIS)* | `xbundle` | Authenticode | P0 |
+| | Android | `.apk`, `.aab` | `xbundle` | APK-Signatur (v2/v3) | P0 |
+| | OpenHarmony | `.app`, `.hap` | `xbundle` | Harmony-Profil / Zertifikat | P0 |
+
+## Zuständigkeiten der Toolchain
+
+| Tool | Rolle | Umfang |
+|---|---|---|
+| **`xsysroot`** | Ziel-Sysroot- & SDK-Manager | `xlinux`, `xmac`, `xios`, `xdroid`, `xohos` (+ Upstream `xwin` für Windows MSVC) |
+| **`xcompiler`** | Portabler Host-Compiler-Manager | `xllvm` (`llvm-slim` Multi-Target-Clang + LLD) & `xgcc` (MinGW / Bare-Metal-GCC) |
+| **`xforge`** | Zero-Docker-Cross-Build-Orchestrator | Steuert `xcompiler` + `xsysroot` zum Bau von **Schichten 1 & 2** (inkl. `lipo` / `strip`) |
+| **`xsign`** | Plattformübergreifende Pure-Rust-Code-Signierung | Apple-, Windows-, Android- und OpenHarmony-Signierung über **Schichten 1–4** |
+| **`xbundle`** | Paket- & App-Bundler | Stellt **Schichten 1 & 2** zu **Schichten 3 & 4** zusammen – ohne native Host-Tools |
+| **`xross`** | Einheitliche Top-Level-CLI | End-to-End-Pipeline: `sysroot → compiler → forge → sign → bundle` |

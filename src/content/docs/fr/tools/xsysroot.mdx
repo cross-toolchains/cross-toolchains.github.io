@@ -1,0 +1,31 @@
+---
+title: xsysroot
+description: Gestionnaire de sysroot et de SDK cible sans Docker pour Linux, macOS, iOS, Android et OpenHarmony.
+---
+
+**Dépôt :** [cross-toolchains/xsysroot](https://github.com/cross-toolchains/xsysroot) · **Statut :** Disponible sur crates.io (`v0.1.0`)
+
+`xsysroot` récupère les en-têtes, bibliothèques et stubs d'exécution de la plateforme cible directement depuis les CDN officiels en amont (avec confirmation explicite de la licence — sans redistribution de SDK) et génère des wrappers natifs pour les éditeurs de liens Clang/LLD sur Linux, macOS et Windows.
+
+## Outils inclus
+
+| Crate | Plateforme cible | Points clés |
+|---|---|---|
+| `xlinux` | Linux (`glibc` et `musl`) | Cible proprement d'anciennes versions de glibc pour une large compatibilité binaire |
+| `xmac` | macOS (`x86_64` et `aarch64`) | Extrait directement le SDK macOS avec une gestion des liens symboliques compatible Windows |
+| `xios` | iOS (appareil et simulateur) | Prend en charge `--from <iPhoneOS*.sdk>` directement ou l'extraction du SDK Xcode |
+| `xdroid` | Android (`arm64-v8a`, `armeabi-v7a`, `x86_64`) | Embarque les bibliothèques d'exécution LLVM par ABI (~2,5 Mio) pour une édition de liens sans bidouillage |
+| `xohos` | OpenHarmony (`aarch64`, `armv7`, `x86_64`) | Cibles Rust Tier-2 avec runtime LLVM embarqué et câblage automatique du `resource-dir` |
+| `xwin` *(en amont)* | Windows MSVC | S'associe de manière transparente avec [Jake-Shadle/xwin](https://github.com/Jake-Shadle/xwin) |
+
+## Utilisation rapide
+
+```sh
+cargo install xsysroot
+
+# Extraire un sysroot Linux glibc
+xlinux splat --target x86_64-unknown-linux-gnu
+
+# Extraire un sysroot Android arm64
+xdroid splat --target aarch64-linux-android --accept-license
+```

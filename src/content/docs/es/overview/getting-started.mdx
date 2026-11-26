@@ -1,0 +1,57 @@
+---
+title: Primeros pasos
+description: Instala xcompiler y xsysroot para compilar de forma cruzada Rust, C y C++ sin Docker.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+`cross-toolchains` te permite compilar de forma cruzada desde **Linux, macOS o Windows** hacia cualquier plataforma principal sin contenedores Docker ni IDEs pesados de fabricantes.
+
+## 1. Instala `xcompiler` y `xsysroot`
+
+<Tabs>
+  <TabItem label="cargo-binstall (Recomendado)">
+```sh
+cargo binstall xcompiler xsysroot
+```
+  </TabItem>
+  <TabItem label="Desde el código fuente (crates.io)">
+```sh
+cargo install xcompiler xsysroot
+```
+  </TabItem>
+</Tabs>
+
+También puedes instalar subherramientas individuales si solo necesitas una plataforma (`xllvm`, `xgcc`, `xlinux`, `xmac`, `xios`, `xdroid`, `xohos`).
+
+## 2. Instala un compilador portátil
+
+Instala una cadena de herramientas LLVM mínima y autocontenida (~26 MiB) que incluye `clang`, `lld` y las binutils de LLVM:
+
+```sh
+xcompiler doctor
+xcompiler install llvm 23.1.6
+```
+
+Para usar el `clang` gestionado directamente en tu shell:
+
+```sh
+eval "$(xllvm env --managed)"
+clang hello.c -o hello
+```
+
+## 3. Obtén un sysroot de destino y compila de forma cruzada
+
+Combina tu `xllvm` gestionado con cualquier herramienta de `xsysroot`; por ejemplo, compilando para `x86_64-unknown-linux-gnu` desde macOS o Windows:
+
+```sh
+xlinux splat --target x86_64-unknown-linux-gnu --clang "$(xllvm path --managed)"
+~/.cache/xlinux/splat/x86_64-unknown-linux-gnu.2.31/bin/x86_64-unknown-linux-gnu-clang hello.c -o hello_linux
+```
+
+En proyectos Rust, apunta el enlazador de destino de Cargo al wrapper generado:
+
+```sh
+CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="$HOME/.cache/xlinux/splat/x86_64-unknown-linux-gnu.2.31/bin/x86_64-unknown-linux-gnu-clang" \
+  cargo build --release --target x86_64-unknown-linux-gnu
+```

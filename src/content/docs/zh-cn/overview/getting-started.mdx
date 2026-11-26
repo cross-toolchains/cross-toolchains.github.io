@@ -1,0 +1,57 @@
+---
+title: 快速上手
+description: 安装 xcompiler 与 xsysroot，零 Docker 完成 Rust、C 与 C++ 跨平台编译。
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+**Xross**（`cross-toolchains`）让你直接在 **Linux、macOS 或 Windows** 宿主机上交叉编译到各大主流目标平台，无需 Docker 容器或沉重的厂商 IDE。
+
+## 1. 安装 `xcompiler` 与 `xsysroot`
+
+<Tabs>
+  <TabItem label="cargo-binstall（推荐）">
+```sh frame="none"
+cargo binstall xcompiler xsysroot
+```
+  </TabItem>
+  <TabItem label="从源码安装（crates.io）">
+```sh frame="none"
+cargo install xcompiler xsysroot
+```
+  </TabItem>
+</Tabs>
+
+你也可以按需单独安装某一个子工具（`xllvm`、`xgcc`、`xlinux`、`xmac`、`xios`、`xdroid`、`xohos`）。
+
+## 2. 安装便携编译器
+
+一键安装精简、自包含的便携版 LLVM（包含 `clang`、`lld` 与 LLVM binutils）：
+
+```sh frame="none"
+xcompiler doctor
+xcompiler install llvm 23.1.6
+```
+
+在当前 Shell 中直接启用托管版 `clang`：
+
+```sh frame="none"
+eval "$(xllvm env --managed)"
+clang hello.c -o hello
+```
+
+## 3. 拉取目标 Sysroot 并交叉编译
+
+将托管版 `xllvm` 与任意 `xsysroot` 工具搭配使用——例如在 macOS 或 Windows 上直接交叉编译 `x86_64-unknown-linux-gnu`：
+
+```sh frame="none"
+xlinux splat --target x86_64-unknown-linux-gnu --clang "$(xllvm path --managed)"
+~/.cache/xlinux/splat/x86_64-unknown-linux-gnu.2.31/bin/x86_64-unknown-linux-gnu-clang hello.c -o hello_linux
+```
+
+对于 Rust 项目，只需将 Cargo 的目标 linker 指向生成的包装脚本：
+
+```sh frame="none"
+CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="$HOME/.cache/xlinux/splat/x86_64-unknown-linux-gnu.2.31/bin/x86_64-unknown-linux-gnu-clang" \
+  cargo build --release --target x86_64-unknown-linux-gnu
+```

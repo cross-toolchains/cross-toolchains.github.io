@@ -1,0 +1,82 @@
+---
+title: Xross
+description: より良く、よりシンプルに、より高速なクロスコンパイルツールチェーン — Docker不要、どの環境からでも。
+editUrl: false
+lastUpdated: false
+template: splash
+tableOfContents: false
+prev: false
+next: false
+---
+
+import { Card, CardGrid, Tabs, TabItem } from '@astrojs/starlight/components';
+import Hero from '../../../components/Hero.astro';
+import '../../../styles/home.css';
+
+<Hero
+  slogan="どこからでも、あらゆるターゲットへビルド。"
+  summary="純粋なRust製の、より良く、よりシンプルで、より高速なクロスコンパイルツールチェーン。Docker不要、ベンダーIDE不要 — 1台のホストからネイティブライブラリやアプリのコンパイル、署名、パッケージングまで完結します。"
+  getStarted="はじめに"
+  getStartedHref="/ja/overview/getting-started/"
+  blueprint="成果物ブループリント"
+  blueprintHref="/ja/overview/blueprint/"
+/>
+
+<div>
+  <Card title="クイックスタート" icon="rocket">
+    <Tabs>
+      <TabItem label="cargo-binstall">
+```sh frame="none"
+cargo binstall xcompiler xsysroot
+xcompiler install llvm 23.1.6
+xlinux splat --target x86_64-unknown-linux-gnu --clang "$(xllvm path --managed)"
+```
+      </TabItem>
+      <TabItem label="cargo install">
+```sh frame="none"
+cargo install xcompiler xsysroot
+xcompiler install llvm 23.1.6
+xlinux splat --target x86_64-unknown-linux-gnu --clang "$(xllvm path --managed)"
+```
+      </TabItem>
+    </Tabs>
+  </Card>
+</div>
+
+<CardGrid>
+  <a href="/ja/overview/getting-started/" class="card-link not-content">
+    <Card title="Docker・VM不要のネイティブホストビルド" icon="rocket">
+      数GBのコンテナイメージ、低速なQEMUエミュレーション、CIでのDocker-in-Dockerの煩わしさから解放されます。ホスト本来の速度でネイティブにクロスコンパイルできます。
+    </Card>
+  </a>
+
+  <a href="/ja/tools/xsysroot/" class="card-link not-content">
+    <Card title="巨大なベンダーIDEは不要" icon="puzzle">
+      バイナリをリンクするためだけに20 GBものXcode、Android Studio、Visual Studioをインストールする必要はありません。必要なターゲットヘッダーとライブラリだけをアップストリームから直接取得します。
+    </Card>
+  </a>
+
+  <a href="/ja/overview/getting-started/" class="card-link not-content">
+    <Card title="どこからでもクロスプラットフォーム対応" icon="laptop">
+      お使いのLinux、macOS、Windowsマシンから、Linux、macOS、iOS、Windows、Android、OpenHarmony、WebAssembly向けに直接ビルドできます。
+    </Card>
+  </a>
+
+  <a href="/ja/tools/xcompiler/" class="card-link not-content">
+    <Card title="コンパイラのバージョン地獄を解消" icon="star">
+      最小構成のポータブルLLVM（<code>clang</code> + <code>lld</code> + binutils）やクロスGCCを数秒でインストール。ローカルとCIで完全に同一のツールチェーンバージョンを維持できます。
+    </Card>
+  </a>
+
+  <a href="/ja/overview/blueprint/" class="card-link not-content">
+    <Card title="ライブラリ＆アプリバンドルを出荷" icon="open-book">
+      単なる生バイナリにとどまりません。<code>.xcframework</code>、<code>.aar</code>、<code>.har</code>/<code>.hnp</code>、<code>.whl</code>、<code>.dmg</code>、<code>.deb</code>、<code>.msix</code>、<code>.apk</code>、<code>.hap</code>をどのホストからでもパッケージングできます。
+    </Card>
+  </a>
+
+  <a href="/ja/overview/roadmap/" class="card-link not-content">
+    <Card title="モジュラーな純Rust製スイート" icon="setting">
+      <code>xlinux</code>や<code>xllvm</code>などの単体ツールを今すぐ使うことも、<code>xross</code>で<code>xsysroot</code> → <code>xcompiler</code> → <code>xforge</code> → <code>xsign</code> → <code>xbundle</code>を連携させることもできます。
+    </Card>
+  </a>
+</CardGrid>

@@ -1,0 +1,57 @@
+---
+title: はじめに
+description: xcompilerとxsysrootをインストールして、DockerなしでRust、C、C++をクロスコンパイルします。
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+`cross-toolchains` を使うと、Dockerコンテナや巨大なベンダーIDEなしで、**Linux、macOS、Windows** から主要なあらゆるターゲット向けにクロスコンパイルできます。
+
+## 1. `xcompiler` と `xsysroot` をインストール
+
+<Tabs>
+  <TabItem label="cargo-binstall（推奨）">
+```sh
+cargo binstall xcompiler xsysroot
+```
+  </TabItem>
+  <TabItem label="ソースからビルド（crates.io）">
+```sh
+cargo install xcompiler xsysroot
+```
+  </TabItem>
+</Tabs>
+
+特定のプラットフォームだけが必要な場合は、個別のサブツールのみをインストールすることもできます（`xllvm`、`xgcc`、`xlinux`、`xmac`、`xios`、`xdroid`、`xohos`）。
+
+## 2. ポータブルコンパイラをインストール
+
+`clang`、`lld`、およびLLVM binutilsを含む最小構成の自己完結型LLVMツールチェーン（約26 MiB）をインストールします。
+
+```sh
+xcompiler doctor
+xcompiler install llvm 23.1.6
+```
+
+管理下の `clang` をシェルから直接使用するには、次のように実行します。
+
+```sh
+eval "$(xllvm env --managed)"
+clang hello.c -o hello
+```
+
+## 3. ターゲットSysrootを取得してクロスコンパイル
+
+管理下の `xllvm` を任意の `xsysroot` ツールと組み合わせます。例えば、macOSやWindowsから `x86_64-unknown-linux-gnu` 向けにビルドする場合は次の通りです。
+
+```sh
+xlinux splat --target x86_64-unknown-linux-gnu --clang "$(xllvm path --managed)"
+~/.cache/xlinux/splat/x86_64-unknown-linux-gnu.2.31/bin/x86_64-unknown-linux-gnu-clang hello.c -o hello_linux
+```
+
+Rustプロジェクトの場合は、Cargoのターゲットリンカーに生成されたラッパーを指定します。
+
+```sh
+CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="$HOME/.cache/xlinux/splat/x86_64-unknown-linux-gnu.2.31/bin/x86_64-unknown-linux-gnu-clang" \
+  cargo build --release --target x86_64-unknown-linux-gnu
+```

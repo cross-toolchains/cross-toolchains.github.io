@@ -1,0 +1,27 @@
+---
+title: llvm-slim
+description: Minimal ~26 MiB portable multi-target LLVM builds for all 6 major host platforms.
+---
+
+**Repository:** [cross-toolchains/llvm-slim](https://github.com/cross-toolchains/llvm-slim) · **License:** Apache-2.0 WITH LLVM-exception
+
+Official LLVM releases weigh 500 MiB–1.5 GiB because they ship static libraries, MLIR, LLDB, Flang, and development headers. `llvm-slim` builds upstream `llvm-project` from source using official `LLVM_DISTRIBUTION_COMPONENTS` to ship **only** what cross-compilation needs:
+
+- `clang` / `clang++`
+- `lld` (`ld.lld`, `lld-link`, `ld64.lld`, `wasm-ld`)
+- `llvm-ar`, `llvm-ranlib`, `llvm-objcopy`, `llvm-strip`, `llvm-nm`, `llvm-lib`, `llvm-dlltool`, `llvm-rc`
+- `clang-resource-headers`
+- Multi-target backends: `X86`, `AArch64`, `ARM`, `RISCV`, `WebAssembly`
+
+On Unix hosts, `LLVM_TOOL_LLVM_DRIVER_BUILD=ON` merges binaries into a single multicall executable — compressing the full toolchain to **~26 MiB**.
+
+## Host Matrix
+
+| Host Triple | Archive Format |
+|---|---|
+| `x86_64-unknown-linux-gnu` | `.tar.xz` |
+| `aarch64-unknown-linux-gnu` | `.tar.xz` |
+| `aarch64-apple-darwin` | `.tar.xz` |
+| `x86_64-apple-darwin` | `.tar.xz` |
+| `x86_64-pc-windows-msvc` | `.zip` |
+| `aarch64-pc-windows-msvc` | `.zip` |

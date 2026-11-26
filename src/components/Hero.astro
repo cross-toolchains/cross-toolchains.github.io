@@ -1,0 +1,140 @@
+---
+import { LinkButton } from '@astrojs/starlight/components';
+import LogoDark from '../assets/logo-dark.svg';
+import LogoLight from '../assets/logo-light.svg';
+import InteractiveMascot from './InteractiveMascot.astro';
+
+interface Props {
+	slogan: string;
+	summary: string;
+	getStarted: string;
+	blueprint: string;
+	getStartedHref?: string;
+	blueprintHref?: string;
+}
+
+const {
+	slogan,
+	summary,
+	getStarted,
+	blueprint,
+	getStartedHref = '/overview/getting-started/',
+	blueprintHref = '/overview/blueprint/',
+} = Astro.props;
+
+const platforms = [
+	{
+		name: 'Linux',
+		detail: 'xlinux · glibc & musl sysroots · .so / .a / .deb / .rpm / .AppImage',
+	},
+	{
+		name: 'macOS',
+		detail: 'xmac · arm64 & x86_64 universal · .dylib / .app / .dmg / .pkg',
+	},
+	{
+		name: 'iOS',
+		detail: 'xios · Device & Simulator SDKs · .xcframework / .ipa',
+	},
+	{
+		name: 'Windows',
+		detail: 'xwin & xgcc · MSVC & MinGW-w64 · .dll / .exe / .msi / .msix',
+	},
+	{
+		name: 'Android',
+		detail: 'xdroid · arm64-v8a, armeabi-v7a, x86_64 · .so / .aar / .apk / .aab',
+	},
+	{
+		name: 'OpenHarmony',
+		detail: 'xohos · Tier-2 Rust targets · .so / .har / .hsp / .hnp / .hap',
+	},
+	{
+		name: 'WASM',
+		detail: 'xllvm (wasm-ld) · wasm32 & WASI · .wasm / npm packages',
+	},
+];
+
+const defaultDetail = 'Your code sits in the middle. Each ring around it is a target platform.';
+---
+
+<div class="hero-bg" aria-hidden="true">
+	<div class="bg-dots"></div>
+	<div class="bg-grad"></div>
+	<div class="bg-grad-warm"></div>
+	<div class="bg-spotlight"></div>
+</div>
+
+<div class="lp-content not-content">
+	<div class="lp-hero">
+		<div class="lp-header-content">
+			<div class="lp-brand">
+				<LogoDark class="lp-logo dark" />
+				<LogoLight class="lp-logo light" />
+				<span class="lp-wordmark">XROSS</span>
+			</div>
+			<p class="lp-slogan">{slogan}</p>
+
+			<div class="lp-platform-box" data-default={defaultDetail}>
+				<div class="lp-platforms" role="list">
+					{platforms.map((p, i) => (
+						<>
+							<button
+								type="button"
+								class="lp-plat-item"
+								data-index={i}
+								data-detail={p.detail}
+							>
+								{p.name}
+							</button>
+							{i < platforms.length - 1 && <span class="lp-plat-sep" aria-hidden="true">/</span>}
+						</>
+					))}
+				</div>
+				<p class="lp-platform-detail" id="xt-platform-detail">{defaultDetail}</p>
+			</div>
+
+			<p class="lp-summary">{summary}</p>
+
+			<div class="lp-actions">
+				<LinkButton icon="right-arrow" href={getStartedHref}>
+					{getStarted}
+				</LinkButton>
+				<LinkButton href={blueprintHref} variant="minimal" icon="open-book">
+					{blueprint}
+				</LinkButton>
+			</div>
+		</div>
+		<div class="lp-hero-art">
+			<InteractiveMascot />
+		</div>
+	</div>
+</div>
+
+<script>
+	const box = document.querySelector<HTMLElement>('.lp-platform-box');
+	const detailEl = document.getElementById('xt-platform-detail');
+	const items = document.querySelectorAll<HTMLButtonElement>('.lp-plat-item');
+	const rings = document.querySelectorAll<SVGCircleElement>('.xt-orbit-ring');
+
+	if (box && detailEl && items.length > 0) {
+		const fallback = box.dataset.default || '';
+
+		const setActive = (idx: number | null) => {
+			items.forEach((el, i) => el.classList.toggle('is-active', idx === i));
+			rings.forEach((ring, i) => ring.classList.toggle('is-lit', idx === i));
+			if (idx === null) {
+				detailEl.textContent = fallback;
+				detailEl.classList.remove('is-lit');
+			} else {
+				detailEl.textContent = items[idx]?.dataset.detail || fallback;
+				detailEl.classList.add('is-lit');
+			}
+		};
+
+		items.forEach((btn, i) => {
+			btn.addEventListener('pointerenter', () => setActive(i));
+			btn.addEventListener('focus', () => setActive(i));
+		});
+
+		box.addEventListener('pointerleave', () => setActive(null));
+	}
+</script>

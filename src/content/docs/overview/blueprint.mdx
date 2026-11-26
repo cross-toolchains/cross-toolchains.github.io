@@ -1,0 +1,46 @@
+---
+title: Artifact Blueprint
+description: The 4-layer artifact architecture across Libraries, Executables, Packages, and App Bundles.
+---
+
+`cross-toolchains` is designed for both **library / SDK authors** and **application developers**. All outputs are organized into four clean layers:
+
+- **Layers 1 & 2 (Raw Binaries & Libraries)** — produced by **`xforge`** (driving `xcompiler` + `xsysroot`)
+- **Layers 3 & 4 (Packages & App Bundles)** — assembled by **`xbundle`** (with cross-platform signing via **`xsign`**)
+
+## 4-Layer Artifact Matrix
+
+| Layer | Platform / Ecosystem | Artifact Formats | Producer | Signing (`xsign`) | Priority |
+|---|---|---|---|---|---|
+| **1. Libraries**<br />*(Static & Dynamic)* | Linux / Android / OpenHarmony | `.so`, `.a` | `xforge` | Optional | P0 |
+| | Apple (macOS / iOS) | `.dylib`, `.a` | `xforge` | Codesign | P0 |
+| | Windows | `.dll` (+ `.lib`), `.lib` | `xforge` | Authenticode | P0 |
+| | Web / WASI | `.wasm` | `xforge` | — | P1 |
+| **2. Executables** | Windows | `.exe` | `xforge` | Authenticode | P0 |
+| | Linux / macOS / Android / OpenHarmony | `unix-exe` (ELF / Mach-O) | `xforge` | macOS Codesign | P0 |
+| **3. Packages**<br />*(For Developers)* | Apple | `.xcframework` *(optional SPM `Package.swift` / `.podspec`)* | `xbundle` | Codesign | P0 |
+| | Android | `.aar` *(optional `+ prefab`)* | `xbundle` | — | P0 |
+| | OpenHarmony | `.har`, `.hsp`, `.hnp` | `xbundle` | Optional (`.hsp`) | P0 |
+| | C / C++ | `include/` + `.so`/`.dylib`/`.a`/`.dll` *(optional `.pc` / `Config.cmake`)* | `xbundle` | Optional | P0 |
+| | Python | `.whl` | `xbundle` | — | P1 |
+| | Node.js | npm native package (`.node` + `.d.ts`) | `xbundle` | Optional | P1 |
+| | Web / JS | npm wasm package (`.wasm` + `.d.ts`) | `xbundle` | — | P1 |
+| | .NET / C# | `.nupkg` | `xbundle` | Optional | P1 |
+| | Go | cgo (Go bindings + prebuilt native libs) | `xbundle` | — | P1 |
+| | Java / Kotlin (JVM) | fat `.jar` (bundled native libs) | `xbundle` | — | P2 |
+| **4. App Bundles**<br />*(For End Users)* | Apple | `.app`, `.dmg`, `.pkg`, `.ipa` *(+ `unix-exe` archive)* | `xbundle` | Codesign + Notarize | P0 |
+| | Linux | `.deb`, `.rpm`, `.AppImage` *(+ `.pkg.tar.zst` / `unix-exe` archive)* | `xbundle` | GPG (optional) | P0 |
+| | Windows | `.msix`, `.msi` *(+ `.exe` archive / NSIS)* | `xbundle` | Authenticode | P0 |
+| | Android | `.apk`, `.aab` | `xbundle` | APK Signature (v2/v3) | P0 |
+| | OpenHarmony | `.app`, `.hap` | `xbundle` | Harmony Profile / Cert | P0 |
+
+## Toolchain Responsibilities
+
+| Tool | Role | Scope |
+|---|---|---|
+| **`xsysroot`** | Target sysroot / SDK manager | `xlinux`, `xmac`, `xios`, `xdroid`, `xohos` (+ upstream `xwin` for Windows MSVC) |
+| **`xcompiler`** | Portable host compiler manager | `xllvm` (`llvm-slim` multi-target Clang + LLD) & `xgcc` (MinGW / bare-metal GCC) |
+| **`xforge`** | Zero-Docker cross-build orchestrator | Drives `xcompiler` + `xsysroot` to build **Layers 1 & 2** (including `lipo` / `strip`) |
+| **`xsign`** | Cross-platform pure-Rust code signing | Apple, Windows, Android, and OpenHarmony signing across **Layers 1–4** |
+| **`xbundle`** | Package & app bundler | Assembles **Layers 1 & 2** into **Layers 3 & 4** without native host tooling |
+| **`xross`** | Unified top-level CLI | End-to-end pipeline: `sysroot → compiler → forge → sign → bundle` |

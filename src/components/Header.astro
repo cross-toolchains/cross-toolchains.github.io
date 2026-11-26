@@ -1,0 +1,120 @@
+---
+import LanguageSelect from '@astrojs/starlight/components/LanguageSelect.astro';
+import Search from '@astrojs/starlight/components/Search.astro';
+import SiteTitle from '@astrojs/starlight/components/SiteTitle.astro';
+import SocialIcons from '@astrojs/starlight/components/SocialIcons.astro';
+import ThemeSelect from './ThemeToggle.astro';
+
+const { topics } = Astro.locals.starlightSidebarTopics;
+---
+
+<div class="xt-header">
+	<div class="title-wrapper sl-flex">
+		<SiteTitle />
+	</div>
+	<nav class="xt-nav-desktop" aria-label="Primary">
+		{topics.map((topic) => (
+			<a
+				href={topic.link}
+				class:list={['xt-nav-link', { 'is-current': topic.isCurrent }]}
+			>
+				{topic.label}
+			</a>
+		))}
+	</nav>
+	<div class="sl-flex xt-search">
+		<Search />
+	</div>
+	<div class="sl-hidden md:sl-flex xt-right-group">
+		<div class="sl-flex xt-social-icons">
+			<SocialIcons />
+		</div>
+		<LanguageSelect />
+		<ThemeSelect />
+	</div>
+</div>
+
+<style>
+	.xt-header {
+		display: grid;
+		gap: var(--sl-nav-gap);
+		align-items: center;
+		height: 100%;
+		grid-template-columns: auto 1fr auto auto;
+	}
+
+	@media (width < 50rem) {
+		.xt-header {
+			grid-template-columns: 1fr auto;
+		}
+	}
+
+	.xt-nav-desktop {
+		display: none;
+		align-items: center;
+		gap: 1.25rem;
+		padding-inline-start: 0.75rem;
+	}
+
+	@media (width >= 50rem) {
+		.xt-nav-desktop {
+			display: flex;
+		}
+	}
+
+	.xt-nav-link {
+		color: var(--sl-color-gray-2);
+		font-size: 0.92rem;
+		font-weight: 600;
+		text-decoration: none;
+		white-space: nowrap;
+		transition: color 150ms ease;
+	}
+
+	.xt-nav-link:hover {
+		color: var(--sl-color-white);
+	}
+
+	.xt-nav-link.is-current {
+		color: var(--sl-color-white);
+	}
+
+	:global(:root[data-theme='dark']) .xt-nav-link.is-current {
+		color: #caffbf;
+	}
+
+	:global(:root[data-theme='light']) .xt-nav-link.is-current {
+		color: #1c1917;
+	}
+
+	.xt-search {
+		justify-content: flex-end;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.xt-right-group,
+	.xt-social-icons {
+		gap: 1rem;
+		align-items: center;
+	}
+
+	.xt-social-icons::after {
+		content: '';
+		height: 1.4rem;
+		border-inline-end: 1px solid var(--sl-color-hairline);
+	}
+
+	@media (width >= 50rem) {
+		.xt-search::after {
+			content: '';
+			height: 1.4rem;
+			border-inline-end: 1px solid var(--sl-color-hairline);
+		}
+	}
+
+	.xt-right-group :global(*:focus:not(:focus-visible)) {
+		outline: none;
+		box-shadow: none;
+	}
+</style>

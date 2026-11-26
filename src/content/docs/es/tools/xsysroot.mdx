@@ -1,0 +1,31 @@
+---
+title: xsysroot
+description: Gestor de sysroots y SDKs de destino sin Docker para Linux, macOS, iOS, Android y OpenHarmony.
+---
+
+**Repositorio:** [cross-toolchains/xsysroot](https://github.com/cross-toolchains/xsysroot) · **Estado:** Disponible en crates.io (`v0.1.0`)
+
+`xsysroot` descarga cabeceras, bibliotecas y stubs de ejecución de la plataforma de destino directamente desde las CDN oficiales de origen (con confirmación explícita de licencia y sin redistribución de SDKs) y genera wrappers nativos de enlazado para Clang/LLD en Linux, macOS y Windows.
+
+## Herramientas incluidas
+
+| Crate | Plataforma de destino | Aspectos destacados |
+|---|---|---|
+| `xlinux` | Linux (`glibc` y `musl`) | Apunta de forma limpia a versiones antiguas de glibc para ofrecer una amplia compatibilidad binaria |
+| `xmac` | macOS (`x86_64` y `aarch64`) | Extrae el SDK de macOS directamente con manejo de enlaces simbólicos seguro para Windows |
+| `xios` | iOS (dispositivo y simulador) | Admite `--from <iPhoneOS*.sdk>` directo o extracción desde el SDK de Xcode |
+| `xdroid` | Android (`arm64-v8a`, `armeabi-v7a`, `x86_64`) | Incluye bibliotecas de runtime de LLVM por ABI (~2,5 MiB) para enlazar sin parches |
+| `xohos` | OpenHarmony (`aarch64`, `armv7`, `x86_64`) | Destinos Tier-2 de Rust con runtime de LLVM integrado y configuración automática de resource-dir |
+| `xwin` *(externo)* | Windows MSVC | Se integra a la perfección con [Jake-Shadle/xwin](https://github.com/Jake-Shadle/xwin) |
+
+## Uso rápido
+
+```sh
+cargo install xsysroot
+
+# Generar un sysroot de Linux glibc
+xlinux splat --target x86_64-unknown-linux-gnu
+
+# Generar un sysroot de Android arm64
+xdroid splat --target aarch64-linux-android --accept-license
+```

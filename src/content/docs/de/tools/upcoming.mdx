@@ -1,0 +1,26 @@
+---
+title: Kommende Bausteine
+description: Design-Überblick über xforge, xsign, xbundle und xross.
+---
+
+Nachdem `xsysroot` und `xcompiler` auf crates.io verfügbar sind, vervollständigen die nächsten vier Bausteine die Zero-Docker-Pipeline:
+
+## `xforge` — Cross-Build-Orchestrator
+- Liest eine deklarative Target-Matrix (Rust / C / C++ / CMake)
+- Löst Linker, Flags und Umgebungsvariablen für `xcompiler` + `xsysroot` automatisch auf
+- Übernimmt Post-Build-Schritte: Universelles Mach-O-`lipo`, Symbol-`strip` und Aufteilung von Debug-Informationen (`.dSYM` / `.pdb` / `.debug`)
+- Erzeugt **Schicht 1 (Bibliotheken)** und **Schicht 2 (Ausführbare Dateien)**
+
+## `xsign` — Plattformübergreifende Pure-Rust-Signierung
+- **Apple**: Codesigning & Notarisierung für Mach-O, `.app`, `.xcframework`, `.ipa`
+- **Windows**: Authenticode-Signierung für `.exe`, `.dll`, `.msi`, `.msix`
+- **Android**: APK Signature Scheme v2/v3
+- **OpenHarmony**: Zertifikats- und Profilsignierung für HAP / HSP / APP
+
+## `xbundle` — Pakete & App-Bundles
+- **Entwicklerpakete (Schicht 3)**: `.xcframework` *(optional SPM / `.podspec`)*, `.aar` *(optional `+ prefab`)*, `.har` / `.hsp` / `.hnp`, C/C++-SDKs, `.whl`, native & Wasm-npm-Pakete, `.nupkg`, `cgo`
+- **Endnutzer-App-Bundles (Schicht 4)**: `.app` / `.dmg` / `.pkg` / `.ipa`, `.deb` / `.rpm` / `.AppImage`, `.msix` / `.msi`, `.apk` / `.aab`, `.app` / `.hap`
+
+## `xross` — Einheitliche CLI
+- Eine einzelne `xross.toml`-Konfiguration verkettet `sysroot → compiler → forge → sign → bundle`
+- Identischer Workflow lokal und in der CI
