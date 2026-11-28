@@ -3,12 +3,12 @@ title: Roadmap
 description: Development phases across xsysroot, xcompiler, xforge, xsign, xbundle, and xross.
 ---
 
-### Phase 1 — Foundation (`xsysroot` & `xcompiler`)
+### Phase 1 — Foundation (`xtarget`, `xsysroot` & `xcompiler`)
 
-- [x] `xsysroot`: `xlinux`, `xmac`, `xios`, `xdroid`, `xohos` with 6/6 cross-platform CI (Linux / macOS / Windows)
+- [x] `xtarget`: Layer 0 target triple normalization & metadata mapping library + CLI (verified 100% against `rustc --print cfg` across all 331 Rust targets)
+- [x] `xsysroot`: `xlinux`, `xmac`, `xios`, `xdroid`, `xohos`, `xwindows` (MSVC + MinGW/UCRT) with 6/6 cross-platform CI (Linux / macOS / Windows)
 - [x] `xcompiler`: `xllvm` + `xgcc` unified workspace published on crates.io (`v0.1.0`)
 - [x] `llvm-slim`: complete 6-host portable binary matrix (`x86_64` / `aarch64` × Linux / macOS / Windows)
-- [ ] `xmingw` (optional P1): lightweight UCRT sysroot for `*-pc-windows-gnullvm`
 
 ### Phase 2 — Cross-Build Orchestration (`xforge`)
 

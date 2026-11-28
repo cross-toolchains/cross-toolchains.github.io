@@ -1,0 +1,44 @@
+---
+title: xtarget
+description: Bibliothek und CLI zur Normalisierung von Target-Triples und Metadaten-Mapping über Toolchains hinweg.
+---
+
+**Repository:** [cross-toolchains/xtarget](https://github.com/cross-toolchains/xtarget)
+
+`xtarget` ist die Layer-0-Basis auf Grundlage von [`target-lexicon`](https://crates.io/crates/target-lexicon). Es normalisiert Rust-, LLVM/Clang-, GNU/GCC- und Zig-Target-Triples (einschließlich Versionszusätzen wie `.2.31`, `android24` und `ios16.0`) in einen einzigen `Target`-Wert und leitet Toolchain-spezifische Projektionen bei Bedarf ab.
+
+## CLI
+
+```console
+$ xtarget host
+aarch64-apple-darwin
+
+$ xtarget get llvm-triple riscv64-linux-gnu
+riscv64-unknown-linux-gnu
+
+$ xtarget get python-tag x86_64-linux-gnu.2.31
+manylinux_2_31_x86_64
+
+$ xtarget env --format github-output aarch64-apple-darwin
+triple=aarch64-apple-darwin
+os=macos
+apple_sdk=MacOSX
+apple_arch=arm64
+oci_platform=darwin/arm64
+```
+
+## Rust-Bibliothek
+
+```toml
+[dependencies]
+xtarget = { version = "0.1", default-features = false }
+```
+
+```rust
+use xtarget::{Libc, Target, TargetOs};
+
+let target = Target::parse("riscv64-linux-gnu")?;
+assert_eq!(target.os(), TargetOs::Linux);
+assert_eq!(target.libc(), Libc::Glibc);
+assert_eq!(target.llvm_triple(), "riscv64-unknown-linux-gnu");
+```

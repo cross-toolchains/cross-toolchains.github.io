@@ -117,6 +117,23 @@ export default defineConfig({
 								],
 							},
 							{
+								label: 'Foundation',
+								translations: {
+									fr: 'Fondations',
+									es: 'Base',
+									'zh-CN': '基础层',
+									ja: '基盤',
+									de: 'Grundlagen',
+								},
+								collapsed: true,
+								items: [
+									{
+										label: 'xtarget',
+										slug: 'tools/xtarget',
+									},
+								],
+							},
+							{
 								label: 'Sysroots',
 								translations: { 'zh-CN': '目标 Sysroots' },
 								collapsed: true,

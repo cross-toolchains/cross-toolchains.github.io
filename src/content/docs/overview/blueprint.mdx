@@ -38,7 +38,8 @@ description: The 4-layer artifact architecture across Libraries, Executables, Pa
 
 | Tool | Role | Scope |
 |---|---|---|
-| **`xsysroot`** | Target sysroot / SDK manager | `xlinux`, `xmac`, `xios`, `xdroid`, `xohos` (+ upstream `xwin` for Windows MSVC) |
+| **`xtarget`** | Target triple & metadata foundation | Normalizes Rust / LLVM / GNU / Zig triples + qualifiers into orthogonal OS / libc / ABI / SDK / ecosystem mappings |
+| **`xsysroot`** | Target sysroot / SDK manager | `xlinux`, `xmac`, `xios`, `xdroid`, `xohos`, `xwindows` (MSVC & MinGW/UCRT) |
 | **`xcompiler`** | Portable host compiler manager | `xllvm` (`llvm-slim` multi-target Clang + LLD) & `xgcc` (MinGW / bare-metal GCC) |
 | **`xforge`** | Zero-Docker cross-build orchestrator | Drives `xcompiler` + `xsysroot` to build **Layers 1 & 2** (including `lipo` / `strip`) |
 | **`xsign`** | Cross-platform pure-Rust code signing | Apple, Windows, Android, and OpenHarmony signing across **Layers 1–4** |

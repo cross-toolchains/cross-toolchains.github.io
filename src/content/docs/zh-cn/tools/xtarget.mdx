@@ -1,0 +1,69 @@
+---
+title: xtarget
+description: 跨工具链目标三元组归一化与元数据映射基础库及 CLI。
+---
+
+**代码仓库：** [cross-toolchains/xtarget](https://github.com/cross-toolchains/xtarget) · **状态：** 已发布 crates.io (`v0.1.0`)
+
+`xtarget` 是基于 [`target-lexicon`](https://crates.io/crates/target-lexicon) 构建的 Layer 0 基础库与命令行工具。它能将 Rust、LLVM/Clang、GNU/GCC、Zig 的目标三元组（含 `.2.31`、`android24`、`ios16.0` 等版本后缀）统一解析为单个 `Target`，按需推导出各工具链与生态的平台标识符，且 `rust_cfg()` 已针对 `rustc` 全部 331 个内置目标通过 `rustc --print cfg` 全量交叉校验。
+
+## 命令行用法
+
+```console
+$ xtarget host
+aarch64-apple-darwin
+
+$ xtarget get llvm-triple riscv64-linux-gnu
+riscv64-unknown-linux-gnu
+
+$ xtarget get clang-args riscv64-linux-gnu
+-march=rv64gc -mabi=lp64d
+
+$ xtarget get python-tag x86_64-linux-gnu.2.31
+manylinux_2_31_x86_64
+
+$ xtarget env --format github-output aarch64-apple-darwin
+triple=aarch64-apple-darwin
+os=macos
+apple_sdk=MacOSX
+apple_arch=arm64
+oci_platform=darwin/arm64
+```
+
+## Rust 库用法
+
+```toml
+[dependencies]
+xtarget = { version = "0.1", default-features = false }
+```
+
+```rust
+use std::process::Command;
+use xtarget::{Libc, Target, TargetOs};
+
+let target = Target::parse("riscv64-linux-gnu")?;
+
+match (target.os(), target.libc()) {
+    (TargetOs::Linux, Libc::Glibc) => println!("Debian arch: {:?}", target.debian_arch()),
+    (TargetOs::Linux, Libc::Musl) => println!("Alpine arch: {:?}", target.alpine_arch()),
+    (TargetOs::Windows, Libc::Msvc) => println!("MSVC arch: {:?}", target.msvc_arch()),
+    _ => {}
+}
+
+Command::new("clang")
+    .arg("--target").arg(target.llvm_triple().as_ref())
+    .args(target.clang_extra_args());
+
+let cfg = target.rust_cfg();
+println!("arch={} os={} env={}", cfg.arch, cfg.os, cfg.env);
+```
+
+## 覆盖的投影维度
+
+| 分组 | `Target` 方法 |
+|---|---|
+| **核心** | `parse`, `parse_loose`, `from_triple`, `host`, `as_str`, `lexicon`, `qualifier` |
+| **平台与 ABI** | `os`, `libc`, `endian`, `pointer_width`, `windows_abi`, `wasm_abi`, `apple_sdk`, `is_*`, `exe_suffix`, `dylib_suffix`, `staticlib_suffix` |
+| **工具链** | `rust_triple`, `rust_cfg`, `llvm_triple`, `clang_extra_args`, `gnu_triple`, `ziglang_triple`, `lld_flavor`, `cargo_env_suffix`, `cc_rs_env_suffix`, `cmake_system_name`, `cmake_system_processor` |
+| **发行版与 SDK** | `debian_arch`, `alpine_arch`, `msvc_arch`, `apple_arch`, `android_abi`, `ohos_abi` |
+| **多语言生态** | `node_platform`/`arch`, `python_platform_tag`, `golang_os`/`arch`, `jvm_os`/`arch`/`classifier`, `dotnet_rid`, `kotlin_native_target`, `dart_os`/`arch`, `ruby_platform`, `luajit_os`/`arch`, `oci_platform` |

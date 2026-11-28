@@ -1,0 +1,44 @@
+---
+title: xtarget
+description: クロスツールチェーン向けターゲットトリプル正規化・メタデータマッピングライブラリおよび CLI。
+---
+
+**リポジトリ:** [cross-toolchains/xtarget](https://github.com/cross-toolchains/xtarget)
+
+`xtarget` は [`target-lexicon`](https://crates.io/crates/target-lexicon) 上に構築された Layer 0 のターゲット正規化ライブラリおよび CLI です。Rust、LLVM/Clang、GNU/GCC、Zig のターゲットトリプル（`.2.31`、`android24`、`ios16.0` などのバージョン修飾子を含む）を単一の `Target` に正規化し、各ツールチェーンやエコシステム向けの識別子をオンデマンドで導出します。
+
+## CLI
+
+```console
+$ xtarget host
+aarch64-apple-darwin
+
+$ xtarget get llvm-triple riscv64-linux-gnu
+riscv64-unknown-linux-gnu
+
+$ xtarget get python-tag x86_64-linux-gnu.2.31
+manylinux_2_31_x86_64
+
+$ xtarget env --format github-output aarch64-apple-darwin
+triple=aarch64-apple-darwin
+os=macos
+apple_sdk=MacOSX
+apple_arch=arm64
+oci_platform=darwin/arm64
+```
+
+## Rust ライブラリ
+
+```toml
+[dependencies]
+xtarget = { version = "0.1", default-features = false }
+```
+
+```rust
+use xtarget::{Libc, Target, TargetOs};
+
+let target = Target::parse("riscv64-linux-gnu")?;
+assert_eq!(target.os(), TargetOs::Linux);
+assert_eq!(target.libc(), Libc::Glibc);
+assert_eq!(target.llvm_triple(), "riscv64-unknown-linux-gnu");
+```
